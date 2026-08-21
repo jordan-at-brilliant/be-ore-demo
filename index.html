@@ -926,7 +926,7 @@ function loadMore() { state.page++; renderGallery(); }
 // PDP
 // ═══════════════════════════════════════════════════
 async function openPDP(base, cat) {
-  // Make sure the cat data is loaded
+  // Ensure the primary category is loaded
   const actualCat = cat && loadedCats[cat] ? cat : CATS.find(c => loadedCats[c]?.catalog?.[base]);
   if (!actualCat) return;
 
@@ -941,6 +941,18 @@ async function openPDP(base, cat) {
 
   showPDP();
   renderPDP(actualCat);
+
+  // Load cross-category catalogs in background so Complete the Look images resolve.
+  // Re-render the recs area once they're all in — only if we're still on this PDP.
+  const crossCats = CATS.filter(c => c !== actualCat && !loadedCats[c]);
+  if (crossCats.length) {
+    Promise.all(crossCats.map(loadCat)).then(() => {
+      if (state.selectedBase === base && state.view === 'pdp') {
+        const ra = document.getElementById('recs-area');
+        if (ra) ra.innerHTML = buildRecsArea(actualCat, loadedCats[actualCat]?.recs || {});
+      }
+    });
+  }
 }
 
 function showPDP() {
