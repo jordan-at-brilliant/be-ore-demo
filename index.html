@@ -642,8 +642,11 @@ function renderFbPanel() {
     </div>`).join('');
 }
 function updateFbBadge() {
-  const n = Object.keys(votes).length;
-  document.getElementById('fb-count').textContent = n;
+  const vals = Object.values(votes);
+  const n = vals.length;
+  const synced = vals.filter(v => v.synced).length;
+  const countEl = document.getElementById('fb-count');
+  countEl.textContent = n > 0 && synced < n ? `${n} (${n - synced} pending)` : n;
   document.getElementById('fb-badge').classList.toggle('show', n > 0);
   const exportBtn = document.getElementById('export-btn');
   if (exportBtn) exportBtn.style.display = n > 0 ? '' : 'none';
@@ -820,12 +823,26 @@ async function submitVote(anchorSku, fn, recSku, vote, note, cardId, siblings) {
 }
 
 function updateReviewBtnUI(cardId, vote) {
+  // Update the clicked card immediately (by ID — always present)
   const card = document.getElementById(cardId);
-  if (!card) return;
-  const btn = card.querySelector('.review-btn');
-  if (!btn) return;
+  if (card) {
+    const btn = card.querySelector('.review-btn');
+    if (btn) _applyVoteStyle(btn, vote);
+  }
+  // Also refresh any other visible cards with the same anchor+rec+fn
+  // (e.g. the same rec appearing in multiple sections)
+  if (rm.anchorSku && rm.recSku && rm.fn) {
+    document.querySelectorAll(
+      `.review-btn[data-anchor-sku="${CSS.escape(rm.anchorSku)}"][data-rec-sku="${CSS.escape(rm.recSku)}"][data-fn="${CSS.escape(rm.fn)}"]`
+    ).forEach(btn => _applyVoteStyle(btn, vote));
+  }
+  // Refresh the vote count badge
+  updateFbBadge();
+}
+
+function _applyVoteStyle(btn, vote) {
   btn.classList.remove('voted-up', 'voted-down');
-  if (vote === 'up') { btn.classList.add('voted-up'); btn.textContent = '👍 Reviewed'; }
+  if (vote === 'up')   { btn.classList.add('voted-up');   btn.textContent = '👍 Reviewed'; }
   if (vote === 'down') { btn.classList.add('voted-down'); btn.textContent = '👎 Reviewed'; }
 }
 
@@ -1221,7 +1238,7 @@ function recCard(r, fn, preferCat, isSS=false, allSkus=[]) {
         ${showG ? `<span class="gate-badge ${gateOk?'ok':'warn'}">${gateOk?'✓':'⚠'}</span>` : ''}
       </div>` : ''}
     </div>
-    <button class="review-btn ${reviewClass}" onclick="event.stopPropagation();openReviewModal('${he(state.selectedSku)}','${fn}','${he(r.sku)}',JSON.parse(this.dataset.sibs),'${cardId}')" data-sibs="${sibsJson}">${reviewLabel}</button>
+    <button class="review-btn ${reviewClass}" onclick="event.stopPropagation();openReviewModal('${he(state.selectedSku)}','${fn}','${he(r.sku)}',JSON.parse(this.dataset.sibs),'${cardId}')" data-sibs="${sibsJson}" data-anchor-sku="${he(state.selectedSku)}" data-rec-sku="${he(r.sku)}" data-fn="${fn}">${reviewLabel}</button>
   </div>`;
 }
 
