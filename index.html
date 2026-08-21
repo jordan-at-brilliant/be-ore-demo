@@ -530,13 +530,24 @@ textarea,input{font:inherit;}
 // ═══════════════════════════════════════════════════
 // Constants
 // ═══════════════════════════════════════════════════
-const DATA        = 'data';
-const ICONS       = {rings:'💍',earrings:'✨',bracelets:'📿',pendants:'🏅'};
-const PAGE_SIZE   = 48;
-const WORKER_URL  = 'https://ore-feedback.jordan-hoekwater.workers.dev'; // set after deploy
-const LS_NAME     = 'ore_tester_name';
-const LS_VOTES    = 'ore_votes';
-const CATS        = ['rings','earrings','bracelets','pendants'];
+const DATA      = 'data';
+const ICONS     = {rings:'💍',earrings:'✨',bracelets:'📿',pendants:'🏅'};
+const PAGE_SIZE = 48;
+const LS_NAME   = 'ore_tester_name';
+const LS_VOTES  = 'ore_votes';
+const CATS      = ['rings','earrings','bracelets','pendants'];
+
+// Google Forms endpoint — no token required, works from any browser
+const GF_URL    = 'https://docs.google.com/forms/d/e/1FAIpQLSclC9xwQDfWkwTVSU-ZmBgKZK7-ZqJ7j1lzWuAS7PABmppHMA/formResponse';
+const GF_FIELDS = {
+  tester:          'entry.167162656',
+  anchor_sku:      'entry.366617623',
+  rec_sku:         'entry.2047232575',
+  fn:              'entry.1831255798',
+  vote:            'entry.587060695',
+  note:            'entry.2043052792',
+  shown_alongside: 'entry.1340037433',
+};
 
 // ═══════════════════════════════════════════════════
 // State
@@ -638,30 +649,10 @@ function updateFbBadge() {
   if (exportBtn) exportBtn.style.display = n > 0 ? '' : 'none';
 }
 
-async function exportFeedback() {
+function exportFeedback() {
   const entries = Object.values(votes);
   if (!entries.length) { showToast('No votes to export.'); return; }
-
-  // Retry any unsynced votes through the Worker before downloading
-  const unsynced = entries.filter(e => !e.synced);
-  if (unsynced.length) {
-    showToast(`Syncing ${unsynced.length} pending vote${unsynced.length !== 1 ? 's' : ''}…`);
-    await Promise.allSettled(unsynced.map(async e => {
-      try {
-        const res = await fetch(WORKER_URL, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(e),
-        });
-        if (res.ok) {
-          votes[voteKey(e.anchor_sku, e.fn, e.rec_sku)].synced = true;
-        }
-      } catch {}
-    }));
-    saveLS();
-  }
-
-  const blob = new Blob([Object.values(votes).map(e => JSON.stringify(e)).join('\n')], {type:'application/x-ndjson'});
+  const blob = new Blob([entries.map(e => JSON.stringify(e)).join('\n')], {type:'application/x-ndjson'});
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
   a.download = `ore-feedback-${new Date().toISOString().slice(0,10)}.jsonl`;
@@ -794,35 +785,37 @@ function voteKey(anchorSku, fn, recSku) { return `${anchorSku}|${fn}|${recSku}`;
 async function submitVote(anchorSku, fn, recSku, vote, note, cardId, siblings) {
   const tester = localStorage.getItem(LS_NAME) || 'Anonymous';
   const key = voteKey(anchorSku, fn, recSku);
+  const sibs = (siblings || []).filter(s => s !== recSku);
   const entry = {
     ts: new Date().toISOString(), tester,
     anchor_sku: anchorSku, anchor_cat: state.currentCat, fn,
     rec_sku: recSku, vote, note: note || '',
-    shown_alongside: (siblings || []).filter(s => s !== recSku),
+    shown_alongside: sibs,
   };
-  // Save locally first so nothing is lost
+
+  // Save locally so nothing is ever lost
   votes[key] = entry;
   saveLS(); updateFbBadge();
   updateReviewBtnUI(cardId, vote);
 
-  // POST to Worker (non-blocking — failure falls back to local)
-  try {
-    const res = await fetch(WORKER_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(entry),
-    });
-    if (res.ok) {
+  // POST to Google Form — fire and forget, no token needed
+  const fd = new FormData();
+  fd.append(GF_FIELDS.tester,          tester);
+  fd.append(GF_FIELDS.anchor_sku,      anchorSku);
+  fd.append(GF_FIELDS.rec_sku,         recSku);
+  fd.append(GF_FIELDS.fn,              fn);
+  fd.append(GF_FIELDS.vote,            vote);
+  fd.append(GF_FIELDS.note,            note || '');
+  fd.append(GF_FIELDS.shown_alongside, sibs.join(', '));
+
+  fetch(GF_URL, { method: 'POST', mode: 'no-cors', body: fd })
+    .then(() => {
       votes[key].synced = true;
       saveLS();
-      showToast(`${vote === 'up' ? '👍' : '👎'} Sent — thank you!`);
-    } else {
-      showToast(`${vote === 'up' ? '👍' : '👎'} Saved locally (will retry on export)`);
-    }
-  } catch {
-    showToast(`${vote === 'up' ? '👍' : '👎'} Saved locally (offline?)`);
-  }
+    })
+    .catch(() => {}); // stays in localStorage if offline
 
+  showToast(`${vote === 'up' ? '👍' : '👎'} Sent — thank you!`);
   if (document.getElementById('fb-panel').classList.contains('open')) renderFbPanel();
 }
 
