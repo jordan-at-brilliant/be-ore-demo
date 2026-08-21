@@ -174,6 +174,15 @@ textarea,input{font:inherit;}
 .chip.live{background:var(--ok-bg);color:var(--ok);}
 .chip.soon{background:var(--warn-bg);color:var(--warn);}
 .chip.ss-chip{background:var(--ss-bg);color:var(--ss);}
+.chip.server-req{background:var(--surface2);color:var(--text-dim);border:1px dashed var(--border);opacity:.7;cursor:not-allowed;}
+
+/* Server-gated section overlay */
+.server-gate{position:relative;}
+.server-gate-overlay{position:absolute;inset:0;background:var(--bg);opacity:.65;border-radius:var(--radius);z-index:2;pointer-events:none;}
+.server-gate-label{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);z-index:3;background:var(--surface);border:1px dashed var(--border);border-radius:var(--radius);padding:8px 14px;font-size:11px;color:var(--text-dim);white-space:nowrap;text-align:center;pointer-events:none;box-shadow:var(--shadow);}
+
+/* Search mode indicator */
+#search-mode{font-size:10px;color:rgba(255,255,255,.45);margin-left:4px;white-space:nowrap;}
 
 /* PDP rec area */
 .view-tabs{display:flex;border-bottom:1px solid var(--border);margin:20px 0 16px;}
@@ -286,6 +295,7 @@ textarea,input{font:inherit;}
       <span class="search-icon">🔍</span>
       <input id="search-top" type="search" placeholder="Search by name or SKU…" oninput="applyFilters()">
     </div>
+    <span id="search-mode" title="AI semantic search requires the rec server. Text filter is active.">Text filter · AI search offline</span>
     <div id="cat-pills">
       <button class="cat-pill active" data-cat="all"      onclick="selectCat('all')">All</button>
       <button class="cat-pill"        data-cat="rings"    onclick="selectCat('rings')">Rings</button>
@@ -320,13 +330,21 @@ textarea,input{font:inherit;}
 
       <div id="tailor-section">
         <div class="tailor-row">
-          <span class="tailor-label">Tailor Recs</span>
+          <span class="tailor-label">Tailor Recs <span style="font-size:9px;background:var(--ok-bg);color:var(--ok);padding:1px 5px;border-radius:8px;font-weight:700;margin-left:4px;">LIVE</span></span>
           <div class="toggle-wrap">
             <span class="tailor-status off" id="tailor-status">Off</span>
             <button class="toggle" id="tailor-toggle" onclick="onTailoredToggle(!state.tailoredRecs)"></button>
           </div>
         </div>
-        <div class="tailor-note" id="tailor-note">Browse more to build context</div>
+        <div class="tailor-note" id="tailor-note">Re-sorts precomputed recs by session affinity</div>
+      </div>
+
+      <div class="ss-section" style="position:relative;opacity:.5;pointer-events:none;" title="Requires rec server">
+        <div class="ss-section-title" style="display:flex;align-items:center;gap:6px;">
+          Personalized Ranking
+          <span style="font-size:9px;background:var(--surface2);color:var(--text-dim);border:1px dashed var(--border);padding:1px 6px;border-radius:8px;font-weight:700;">SERVER REQUIRED</span>
+        </div>
+        <div style="font-size:11px;color:var(--text-dim);line-height:1.5;">Real-time re-scoring using full knowledge base + live session context. Unlocks when the rec server is running.</div>
       </div>
 
       <div id="sidebar-actions">
@@ -849,7 +867,7 @@ function renderPDP(cat) {
           <span class="chip live"><span class="dot"></span>Pairs With</span>
           <span class="chip live"><span class="dot"></span>Complete the Look</span>
           ${hasSS ? '<span class="chip ss-chip"><span class="dot"></span>Searchspring data</span>' : ''}
-          <span class="chip soon"><span class="dot"></span>Personalized ranking (server)</span>
+          <span class="chip server-req" title="Requires rec server">⚫ Personalized ranking — server required</span>
         </div>
       </div>
     </div>
