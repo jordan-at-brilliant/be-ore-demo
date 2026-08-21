@@ -530,16 +530,13 @@ textarea,input{font:inherit;}
 // ═══════════════════════════════════════════════════
 // Constants
 // ═══════════════════════════════════════════════════
-const DATA     = 'data';
-const ICONS    = {rings:'💍',earrings:'✨',bracelets:'📿',pendants:'🏅'};
-const PAGE_SIZE= 48;
-const GH_REPO  = 'jordan-at-brilliant/be-ore-demo';
-const GH_FILE  = 'feedback/queue.jsonl';
-const LS_TOKEN = 'ore_gh_token';
-const LS_NAME  = 'ore_tester_name';
-const LS_VOTES = 'ore_votes';
-const LS_QUEUE = 'ore_fb_queue';
-const CATS     = ['rings','earrings','bracelets','pendants'];
+const DATA        = 'data';
+const ICONS       = {rings:'💍',earrings:'✨',bracelets:'📿',pendants:'🏅'};
+const PAGE_SIZE   = 48;
+const WORKER_URL  = 'https://ore-feedback.jordan-hoekwater.workers.dev'; // set after deploy
+const LS_NAME     = 'ore_tester_name';
+const LS_VOTES    = 'ore_votes';
+const CATS        = ['rings','earrings','bracelets','pendants'];
 
 // ═══════════════════════════════════════════════════
 // State
@@ -641,14 +638,35 @@ function updateFbBadge() {
   if (exportBtn) exportBtn.style.display = n > 0 ? '' : 'none';
 }
 
-function exportFeedback() {
+async function exportFeedback() {
   const entries = Object.values(votes);
   if (!entries.length) { showToast('No votes to export.'); return; }
-  const blob = new Blob([entries.map(e => JSON.stringify(e)).join('\n')], {type:'application/x-ndjson'});
+
+  // Retry any unsynced votes through the Worker before downloading
+  const unsynced = entries.filter(e => !e.synced);
+  if (unsynced.length) {
+    showToast(`Syncing ${unsynced.length} pending vote${unsynced.length !== 1 ? 's' : ''}…`);
+    await Promise.allSettled(unsynced.map(async e => {
+      try {
+        const res = await fetch(WORKER_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(e),
+        });
+        if (res.ok) {
+          votes[voteKey(e.anchor_sku, e.fn, e.rec_sku)].synced = true;
+        }
+      } catch {}
+    }));
+    saveLS();
+  }
+
+  const blob = new Blob([Object.values(votes).map(e => JSON.stringify(e)).join('\n')], {type:'application/x-ndjson'});
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
   a.download = `ore-feedback-${new Date().toISOString().slice(0,10)}.jsonl`;
   a.click();
+  showToast('Exported ✓');
 }
 
 async function syncPending() {
@@ -773,18 +791,38 @@ async function rmSend() {
 // ═══════════════════════════════════════════════════
 function voteKey(anchorSku, fn, recSku) { return `${anchorSku}|${fn}|${recSku}`; }
 
-function submitVote(anchorSku, fn, recSku, vote, note, cardId, siblings) {
+async function submitVote(anchorSku, fn, recSku, vote, note, cardId, siblings) {
   const tester = localStorage.getItem(LS_NAME) || 'Anonymous';
   const key = voteKey(anchorSku, fn, recSku);
-  votes[key] = {
+  const entry = {
     ts: new Date().toISOString(), tester,
     anchor_sku: anchorSku, anchor_cat: state.currentCat, fn,
     rec_sku: recSku, vote, note: note || '',
     shown_alongside: (siblings || []).filter(s => s !== recSku),
   };
+  // Save locally first so nothing is lost
+  votes[key] = entry;
   saveLS(); updateFbBadge();
   updateReviewBtnUI(cardId, vote);
-  showToast(`${vote === 'up' ? '👍' : '👎'} Saved — export when you're done`);
+
+  // POST to Worker (non-blocking — failure falls back to local)
+  try {
+    const res = await fetch(WORKER_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(entry),
+    });
+    if (res.ok) {
+      votes[key].synced = true;
+      saveLS();
+      showToast(`${vote === 'up' ? '👍' : '👎'} Sent — thank you!`);
+    } else {
+      showToast(`${vote === 'up' ? '👍' : '👎'} Saved locally (will retry on export)`);
+    }
+  } catch {
+    showToast(`${vote === 'up' ? '👍' : '👎'} Saved locally (offline?)`);
+  }
+
   if (document.getElementById('fb-panel').classList.contains('open')) renderFbPanel();
 }
 
