@@ -5,137 +5,182 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>BE·ORE Recommendation Engine</title>
 <style>
+/* ── Tokens ── */
 :root {
-  --bg:#F9F7F4;--surface:#FFFFFF;--surface2:#F2EFE9;--border:#E0DBD2;
-  --text:#1A1814;--text-mid:#5A5650;--text-dim:#9A9590;
-  --gold:#B89858;--gold-light:#F4EDD8;--navy:#1B2340;
-  --tag-bg:#EDEBE5;--tag-text:#5A5650;
+  --accent:#1a3a8a;--accent-light:#e8edf8;--accent-mid:#3d5fa8;
+  --gold:#B89858;--gold-light:#F4EDD8;
+  --bg:#f7f5f1;--surface:#ffffff;--surface2:#f0ede7;--border:#e0dbd2;
+  --text:#1a1814;--text-mid:#5a5650;--text-dim:#9a9590;
   --ok:#2D6A4F;--ok-bg:#EEF6EE;--warn:#9A6A1A;--warn-bg:#FFF8EC;
   --up:#2D6A4F;--up-bg:#EEF6EE;--down:#C0392B;--down-bg:#FEF0EE;
   --ss:#5865F2;--ss-bg:#EEF0FD;
-  --soon-bg:#FFF8EC;--soon-text:#9A6A1A;--live-bg:#EEF6EE;--live-text:#2D6A4F;
+  --tag-bg:#edebe5;--tag-text:#5a5650;
   --shadow:0 1px 4px rgba(0,0,0,.07);--shadow-md:0 4px 16px rgba(0,0,0,.10);
-  --radius:8px;
+  --radius:8px;--sidebar-w:270px;
 }
 @media(prefers-color-scheme:dark){:root:not([data-theme="light"]){
-  --bg:#141210;--surface:#1E1C1A;--surface2:#252220;--border:#352F28;
-  --text:#EDE8E0;--text-mid:#B8B0A4;--text-dim:#6A6460;
-  --gold:#C8A858;--gold-light:#2E2418;--navy:#0E1220;
-  --tag-bg:#28241E;--tag-text:#9A9086;
-  --ok:#5AB888;--ok-bg:#10201A;--warn:#C8901A;--warn-bg:#2A2010;
-  --up:#5AB888;--up-bg:#10201A;--down:#E57368;--down-bg:#2A1210;
-  --ss:#8A94F8;--ss-bg:#1A1C38;
-  --soon-bg:#2A2010;--soon-text:#C8901A;--live-bg:#10201A;--live-text:#5AB888;
+  --bg:#141210;--surface:#1e1c1a;--surface2:#252220;--border:#352f28;
+  --text:#ede8e0;--text-mid:#b8b0a4;--text-dim:#6a6460;
+  --accent:#4a6ac8;--accent-light:#1a2240;--accent-mid:#5a7ae0;
+  --gold:#c8a858;--gold-light:#2e2418;
+  --tag-bg:#28241e;--tag-text:#9a9086;
+  --ok:#5ab888;--ok-bg:#10201a;--warn:#c8901a;--warn-bg:#2a2010;
+  --up:#5ab888;--up-bg:#10201a;--down:#e57368;--down-bg:#2a1210;
+  --ss:#8a94f8;--ss-bg:#1a1c38;
   --shadow:0 1px 4px rgba(0,0,0,.3);--shadow-md:0 4px 16px rgba(0,0,0,.4);
 }}
 :root[data-theme="dark"]{
-  --bg:#141210;--surface:#1E1C1A;--surface2:#252220;--border:#352F28;
-  --text:#EDE8E0;--text-mid:#B8B0A4;--text-dim:#6A6460;
-  --gold:#C8A858;--gold-light:#2E2418;--navy:#0E1220;
-  --tag-bg:#28241E;--tag-text:#9A9086;
-  --ok:#5AB888;--ok-bg:#10201A;--warn:#C8901A;--warn-bg:#2A2010;
-  --up:#5AB888;--up-bg:#10201A;--down:#E57368;--down-bg:#2A1210;
-  --ss:#8A94F8;--ss-bg:#1A1C38;
-  --soon-bg:#2A2010;--soon-text:#C8901A;--live-bg:#10201A;--live-text:#5AB888;
+  --bg:#141210;--surface:#1e1c1a;--surface2:#252220;--border:#352f28;
+  --text:#ede8e0;--text-mid:#b8b0a4;--text-dim:#6a6460;
+  --accent:#4a6ac8;--accent-light:#1a2240;--accent-mid:#5a7ae0;
+  --gold:#c8a858;--gold-light:#2e2418;
+  --tag-bg:#28241e;--tag-text:#9a9086;
+  --ok:#5ab888;--ok-bg:#10201a;--warn:#c8901a;--warn-bg:#2a2010;
+  --up:#5ab888;--up-bg:#10201a;--down:#e57368;--down-bg:#2a1210;
+  --ss:#8a94f8;--ss-bg:#1a1c38;
   --shadow:0 1px 4px rgba(0,0,0,.3);--shadow-md:0 4px 16px rgba(0,0,0,.4);
 }
 
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 html,body{height:100%;font-family:system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.5;}
 button{font:inherit;cursor:pointer;}
-textarea{font:inherit;}
+textarea,input{font:inherit;}
 
 /* ── App shell ── */
-#app{display:grid;grid-template-rows:52px auto 1fr;height:100vh;overflow:hidden;}
-#main-area{display:flex;overflow:hidden;}
-#sidebar{width:300px;display:flex;flex-direction:column;border-right:1px solid var(--border);background:var(--surface);flex-shrink:0;}
-#content{flex:1;overflow-y:auto;background:var(--bg);padding:24px;}
+#app{display:flex;flex-direction:column;height:100vh;overflow:hidden;}
+#top-bar{display:flex;align-items:center;gap:10px;padding:0 16px;height:52px;background:var(--accent);flex-shrink:0;border-bottom:2px solid var(--gold);}
+#body{display:flex;flex:1;overflow:hidden;}
 
-/* ── Header ── */
-#header{background:var(--navy);display:flex;align-items:center;gap:10px;padding:0 16px;border-bottom:2px solid var(--gold);}
-#header h1{font-size:14px;font-weight:700;color:#fff;letter-spacing:.06em;}
-.badge{font-size:10px;background:var(--gold);color:#fff;padding:2px 8px;border-radius:20px;font-weight:700;}
-#header .spacer{flex:1;}
-.hdr-btn{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);color:#fff;font-size:11px;padding:4px 10px;border-radius:20px;transition:background .15s;}
-.hdr-btn:hover{background:rgba(255,255,255,.22);}
-#fb-badge{display:none;background:#C0392B;color:#fff;font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px;cursor:pointer;}
+/* ── Top bar ── */
+.logo{font-size:16px;font-weight:800;color:#fff;letter-spacing:.08em;white-space:nowrap;}
+.logo span{opacity:.5;font-weight:400;font-size:11px;margin-left:6px;letter-spacing:.04em;}
+#search-wrap-top{flex:1;max-width:380px;position:relative;}
+#search-top{width:100%;padding:7px 12px 7px 34px;border:1px solid rgba(255,255,255,.2);border-radius:20px;background:rgba(255,255,255,.12);color:#fff;font-size:13px;outline:none;transition:background .15s;}
+#search-top::placeholder{color:rgba(255,255,255,.5);}
+#search-top:focus{background:rgba(255,255,255,.2);border-color:rgba(255,255,255,.4);}
+.search-icon{position:absolute;left:10px;top:50%;transform:translateY(-50%);font-size:14px;pointer-events:none;opacity:.6;}
+#cat-pills{display:flex;gap:4px;flex-shrink:0;}
+.cat-pill{padding:5px 12px;border:1px solid rgba(255,255,255,.2);border-radius:20px;background:none;color:rgba(255,255,255,.7);font-size:11px;font-weight:600;letter-spacing:.04em;transition:all .15s;}
+.cat-pill:hover{background:rgba(255,255,255,.15);color:#fff;}
+.cat-pill.active{background:#fff;color:var(--accent);border-color:#fff;}
+#top-right{display:flex;align-items:center;gap:8px;margin-left:auto;}
+.status-pill{display:flex;align-items:center;gap:5px;padding:4px 10px;border-radius:20px;font-size:11px;font-weight:600;background:rgba(255,255,255,.1);color:rgba(255,255,255,.7);}
+.status-dot{width:7px;height:7px;border-radius:50%;background:#6a6a6a;}
+.status-dot.online{background:#4caf50;box-shadow:0 0 6px #4caf50;}
+#fb-badge{display:none;background:#c0392b;color:#fff;font-size:11px;font-weight:700;padding:4px 10px;border-radius:20px;cursor:pointer;}
 #fb-badge.show{display:inline-flex;align-items:center;gap:4px;}
+.hdr-btn{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:#fff;font-size:11px;padding:5px 11px;border-radius:20px;transition:background .15s;white-space:nowrap;}
+.hdr-btn:hover{background:rgba(255,255,255,.22);}
 
-/* ── Stats bar ── */
-#stats-bar{background:var(--surface2);border-bottom:1px solid var(--border);font-size:11px;color:var(--text-dim);padding:4px 16px;display:flex;gap:14px;align-items:center;flex-wrap:wrap;}
-#stats-bar strong{color:var(--text);}
+/* ── Session sidebar ── */
+#session-sidebar{width:var(--sidebar-w);flex-shrink:0;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden;}
+.ss-section{padding:12px 14px;border-bottom:1px solid var(--border);}
+.ss-section-title{font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--text-dim);margin-bottom:8px;}
+#session-empty{color:var(--text-dim);font-size:12px;padding:4px 0;line-height:1.5;}
+#session-history-list{display:flex;flex-direction:column;gap:5px;}
+.sess-item{display:flex;align-items:center;gap:8px;cursor:pointer;padding:4px 6px;border-radius:6px;transition:background .1s;}
+.sess-item:hover{background:var(--surface2);}
+.sess-thumb{width:36px;height:36px;border-radius:5px;object-fit:cover;background:var(--surface2);border:1px solid var(--border);flex-shrink:0;}
+.sess-thumb-placeholder{width:36px;height:36px;border-radius:5px;background:var(--surface2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;}
+.sess-info{flex:1;min-width:0;}
+.sess-name{font-size:11px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.sess-price{font-size:10px;color:var(--text-mid);}
+.sess-badge{font-size:9px;background:var(--tag-bg);color:var(--text-dim);padding:1px 5px;border-radius:8px;}
+
+/* trend panel */
+#trend-panel{display:none;}
+.trend-row{display:flex;align-items:center;gap:7px;margin-bottom:5px;}
+.trend-label{font-size:11px;color:var(--text-mid);min-width:80px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.trend-bar-wrap{flex:1;height:5px;background:var(--border);border-radius:3px;overflow:hidden;}
+.trend-bar{height:100%;background:var(--accent);border-radius:3px;transition:width .4s;}
+
+/* tailor toggle */
+#tailor-section{padding:12px 14px;border-bottom:1px solid var(--border);}
+.tailor-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;}
+.tailor-label{font-size:12px;font-weight:600;}
+.toggle-wrap{display:flex;align-items:center;gap:6px;}
+.toggle{width:36px;height:20px;background:var(--border);border-radius:10px;border:none;position:relative;transition:background .2s;flex-shrink:0;}
+.toggle.on{background:var(--accent);}
+.toggle::after{content:'';position:absolute;top:2px;left:2px;width:16px;height:16px;background:#fff;border-radius:50%;transition:left .2s;box-shadow:0 1px 3px rgba(0,0,0,.2);}
+.toggle.on::after{left:18px;}
+.tailor-status{font-size:10px;font-weight:700;}
+.tailor-status.on{color:var(--accent);}
+.tailor-status.off{color:var(--text-dim);}
+.tailor-note{font-size:10px;color:var(--text-dim);line-height:1.4;}
+
+/* sidebar actions */
+#sidebar-actions{padding:10px 14px;display:flex;flex-direction:column;gap:6px;margin-top:auto;border-top:1px solid var(--border);}
+.style-btn{width:100%;padding:7px;border:1px solid var(--accent);border-radius:var(--radius);background:var(--accent-light);color:var(--accent);font-size:12px;font-weight:600;}
+.style-btn:hover{background:var(--accent);color:#fff;}
+.session-log-btn{width:100%;padding:6px;border:1px solid var(--border);border-radius:var(--radius);background:none;color:var(--text-dim);font-size:11px;}
+.session-log-btn:hover{border-color:var(--text-mid);color:var(--text-mid);}
+
+/* ── Main content ── */
+#main{flex:1;display:flex;flex-direction:column;overflow:hidden;}
+#filter-bar{display:flex;align-items:center;gap:16px;padding:8px 18px;background:var(--surface);border-bottom:1px solid var(--border);flex-shrink:0;flex-wrap:wrap;}
+.filter-label{font-size:11px;color:var(--text-dim);font-weight:600;white-space:nowrap;}
+#price-slider{width:130px;accent-color:var(--accent);}
+#price-display{font-size:11px;color:var(--text-mid);min-width:60px;}
+.filter-select{padding:4px 8px;border:1px solid var(--border);border-radius:var(--radius);background:var(--surface2);color:var(--text);font-size:11px;outline:none;}
+.filter-select:focus{border-color:var(--accent);}
+.highlight-row{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text-mid);}
+.highlight-row input{accent-color:var(--accent);}
+#product-count-bar{font-size:11px;color:var(--text-dim);padding:5px 18px 0;flex-shrink:0;}
+
+#gallery-wrap{flex:1;overflow-y:auto;padding:14px 18px;}
+#gallery{display:grid;grid-template-columns:repeat(auto-fill,minmax(175px,1fr));gap:14px;}
+
+/* ── Gallery card ── */
+.g-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;overflow:hidden;cursor:pointer;transition:box-shadow .15s,transform .15s,border-color .15s;position:relative;}
+.g-card:hover{box-shadow:var(--shadow-md);transform:translateY(-2px);border-color:var(--accent);}
+.g-card.session-highlight{border-color:var(--gold);box-shadow:0 0 0 2px var(--gold-light);}
+.g-img-wrap{aspect-ratio:1;background:var(--surface2);overflow:hidden;position:relative;}
+.g-img-wrap img{width:100%;height:100%;object-fit:cover;display:block;}
+.g-img-placeholder{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:36px;}
+.g-swatches{position:absolute;bottom:5px;left:5px;display:flex;gap:3px;}
+.g-swatch-dot{width:9px;height:9px;border-radius:50%;border:1px solid rgba(255,255,255,.6);box-shadow:0 1px 2px rgba(0,0,0,.3);}
+.g-info{padding:9px 10px 10px;}
+.g-name{font-size:12px;font-weight:500;line-height:1.35;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;margin-bottom:4px;}
+.g-price{font-size:13px;font-weight:700;color:var(--accent);}
+.g-tag{font-size:9px;color:var(--text-dim);margin-top:2px;}
+#load-more-wrap{padding:14px;text-align:center;}
+.load-more-btn{padding:9px 28px;border:1px solid var(--border);border-radius:20px;background:var(--surface);color:var(--text-mid);font-size:12px;transition:all .15s;}
+.load-more-btn:hover{border-color:var(--accent);color:var(--accent);}
+
+/* ── PDP ── */
+#pdp{flex:1;overflow-y:auto;padding:20px 24px;display:none;}
+.pdp-back{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border:1px solid var(--border);border-radius:20px;background:var(--surface);color:var(--text-mid);font-size:12px;margin-bottom:18px;transition:all .15s;}
+.pdp-back:hover{border-color:var(--accent);color:var(--accent);}
+.pdp-hero{display:flex;gap:24px;margin-bottom:24px;}
+.pdp-img{width:260px;height:260px;border-radius:12px;border:1px solid var(--border);background:var(--surface2);overflow:hidden;flex-shrink:0;box-shadow:var(--shadow-md);}
+.pdp-img img{width:100%;height:100%;object-fit:cover;}
+.pdp-img-placeholder{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:64px;}
+.pdp-meta{flex:1;min-width:0;}
+.pdp-name{font-size:21px;font-weight:700;line-height:1.25;margin-bottom:4px;}
+.pdp-sku{font-family:monospace;font-size:11px;color:var(--text-dim);margin-bottom:10px;}
+.pdp-price{font-size:19px;font-weight:800;color:var(--accent);margin-bottom:16px;}
+.pdp-variants-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--text-dim);margin-bottom:6px;}
+.pdp-variants{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px;}
+.v-pill{display:flex;align-items:center;gap:5px;padding:5px 11px 5px 7px;border:2px solid var(--border);border-radius:20px;background:var(--surface);font-size:11px;font-weight:500;color:var(--text-mid);cursor:pointer;transition:all .15s;}
+.v-pill:hover{border-color:var(--accent);}
+.v-pill.active{border-color:var(--accent);background:var(--accent-light);color:var(--accent);}
+.v-dot{width:14px;height:14px;border-radius:50%;border:1px solid rgba(0,0,0,.12);flex-shrink:0;}
+.pdp-tags{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:14px;}
+.tag{font-size:11px;padding:3px 9px;border-radius:20px;background:var(--tag-bg);color:var(--tag-text);border:1px solid var(--border);}
+.tag.hi{background:var(--accent-light);color:var(--accent);border-color:var(--accent);}
+.pdp-features{display:flex;flex-wrap:wrap;gap:5px;}
 .chip{display:inline-flex;align-items:center;gap:4px;font-size:10px;padding:2px 8px;border-radius:20px;font-weight:600;}
 .chip .dot{width:5px;height:5px;border-radius:50%;background:currentColor;flex-shrink:0;}
-.chip.live{background:var(--live-bg);color:var(--live-text);}
-.chip.soon{background:var(--soon-bg);color:var(--soon-text);}
-.chip.ss{background:var(--ss-bg);color:var(--ss);}
+.chip.live{background:var(--ok-bg);color:var(--ok);}
+.chip.soon{background:var(--warn-bg);color:var(--warn);}
+.chip.ss-chip{background:var(--ss-bg);color:var(--ss);}
 
-/* ── Sidebar ── */
-#cat-tabs{display:flex;border-bottom:1px solid var(--border);background:var(--surface2);}
-.cat-tab{flex:1;padding:9px 4px;text-align:center;font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--text-dim);cursor:pointer;border-bottom:2px solid transparent;border-top:none;border-left:none;border-right:none;background:none;transition:all .15s;}
-.cat-tab:hover{color:var(--text);}
-.cat-tab.active{color:var(--gold);border-bottom-color:var(--gold);background:var(--surface);}
-
-#search-wrap{padding:9px 10px;border-bottom:1px solid var(--border);}
-#search{width:100%;padding:6px 10px;border:1px solid var(--border);border-radius:var(--radius);background:var(--surface2);color:var(--text);font-size:13px;outline:none;}
-#search:focus{border-color:var(--gold);}
-#filter-row{display:flex;gap:5px;margin-top:6px;}
-.filter-select{flex:1;padding:4px 6px;border:1px solid var(--border);border-radius:var(--radius);background:var(--surface2);color:var(--text);font-size:11px;outline:none;}
-.filter-select:focus{border-color:var(--gold);}
-
-#product-count{font-size:11px;color:var(--text-dim);padding:5px 10px 3px;}
-#product-list-wrap{flex:1;overflow-y:auto;}
-#load-more-wrap{padding:8px 10px;text-align:center;}
-#load-more{width:100%;padding:7px;border:1px solid var(--border);border-radius:var(--radius);background:var(--surface2);color:var(--text-mid);font-size:11px;transition:all .15s;}
-#load-more:hover{border-color:var(--gold);color:var(--gold);}
-
-.product-row{display:flex;align-items:center;gap:9px;padding:8px 10px;border-bottom:1px solid var(--border);cursor:pointer;transition:background .1s;}
-.product-row:hover{background:var(--surface2);}
-.product-row.active{background:var(--gold-light);border-left:3px solid var(--gold);}
-.p-thumb{width:40px;height:40px;border-radius:6px;background:var(--surface2);border:1px solid var(--border);flex-shrink:0;overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:16px;}
-.p-thumb img{width:100%;height:100%;object-fit:cover;}
-.p-info{flex:1;min-width:0;}
-.p-name{font-size:12px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.p-sku{font-size:10px;color:var(--text-dim);font-family:monospace;}
-.p-meta{font-size:11px;color:var(--text-mid);}
-.p-vc{font-size:10px;color:var(--text-dim);}
-
-/* ── Loading / empty ── */
-.loading-state{display:flex;flex-direction:column;align-items:center;justify-content:center;height:200px;gap:10px;color:var(--text-dim);}
-.spinner{width:22px;height:22px;border:2px solid var(--border);border-top-color:var(--gold);border-radius:50%;animation:spin .7s linear infinite;}
-@keyframes spin{to{transform:rotate(360deg);}}
-#empty-state{display:flex;flex-direction:column;align-items:center;justify-content:center;height:60vh;gap:14px;text-align:center;}
-#empty-state .icon{font-size:44px;}
-#empty-state p{color:var(--text-dim);max-width:280px;line-height:1.6;font-size:13px;}
-
-/* ── Detail ── */
-#product-detail{max-width:920px;}
-.detail-header{display:flex;gap:16px;margin-bottom:20px;}
-.detail-img{width:120px;height:120px;border-radius:12px;background:var(--surface);border:1px solid var(--border);overflow:hidden;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:36px;box-shadow:var(--shadow);}
-.detail-img img{width:100%;height:100%;object-fit:cover;}
-.detail-meta{flex:1;}
-.detail-name{font-size:19px;font-weight:600;line-height:1.3;margin-bottom:3px;}
-.detail-base-sku{font-family:monospace;font-size:11px;color:var(--text-dim);margin-bottom:8px;}
-.detail-price{font-size:16px;font-weight:700;color:var(--gold);margin-bottom:10px;}
-
-.variants-row{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px;align-items:center;}
-.variants-label{font-size:11px;color:var(--text-dim);font-weight:600;text-transform:uppercase;letter-spacing:.05em;margin-right:4px;}
-.swatch{display:flex;align-items:center;gap:5px;padding:4px 10px 4px 6px;border:2px solid var(--border);border-radius:20px;cursor:pointer;background:var(--surface);font-size:11px;font-weight:500;color:var(--text-mid);transition:all .15s;}
-.swatch:hover{border-color:var(--gold);}
-.swatch.active{border-color:var(--gold);background:var(--gold-light);color:var(--text);}
-.swatch-dot{width:14px;height:14px;border-radius:50%;border:1px solid rgba(0,0,0,.12);flex-shrink:0;}
-
-.tags-row{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:18px;}
-.tag{font-size:11px;padding:2px 8px;border-radius:20px;background:var(--tag-bg);color:var(--tag-text);border:1px solid var(--border);}
-.tag.hi{background:var(--gold-light);color:var(--gold);border-color:var(--gold);}
-.feature-strip{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:22px;}
-
-.view-tabs{display:flex;border-bottom:1px solid var(--border);margin-bottom:20px;}
+/* PDP rec area */
+.view-tabs{display:flex;border-bottom:1px solid var(--border);margin:20px 0 16px;}
 .view-tab{padding:8px 16px;font-size:12px;font-weight:600;color:var(--text-dim);cursor:pointer;border-bottom:2px solid transparent;border-top:none;border-left:none;border-right:none;background:none;transition:all .15s;}
 .view-tab:hover{color:var(--text);}
-.view-tab.active{color:var(--gold);border-bottom-color:var(--gold);}
+.view-tab.active{color:var(--accent);border-bottom-color:var(--accent);}
 .view-tab.ss-tab.active{color:var(--ss);border-bottom-color:var(--ss);}
-
 .rec-section{margin-bottom:28px;}
 .rec-section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;padding-bottom:7px;border-bottom:1px solid var(--border);}
 .rec-section-title{font-size:12px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--text-mid);}
@@ -143,13 +188,13 @@ textarea{font:inherit;}
 
 /* ── Rec card ── */
 .rec-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:10px;transition:box-shadow .15s,border-color .15s,transform .15s;box-shadow:var(--shadow);position:relative;}
-.rec-card:hover{border-color:var(--gold);box-shadow:var(--shadow-md);transform:translateY(-1px);}
+.rec-card:hover{border-color:var(--accent);box-shadow:var(--shadow-md);transform:translateY(-1px);}
 .rec-card.ss-card:hover{border-color:var(--ss);}
 .rec-card-inner{cursor:pointer;}
 .rec-card-img{width:100%;height:90px;object-fit:cover;border-radius:4px;background:var(--surface2);display:block;margin-bottom:7px;}
 .rec-card-name{font-size:11px;font-weight:500;line-height:1.3;margin-bottom:3px;color:var(--text);}
 .rec-card-sku{font-size:10px;color:var(--text-dim);font-family:monospace;margin-bottom:3px;}
-.rec-card-price{font-size:11px;font-weight:700;color:var(--gold);margin-bottom:4px;}
+.rec-card-price{font-size:11px;font-weight:700;color:var(--accent);margin-bottom:4px;}
 .rec-card-attrs{display:flex;flex-wrap:wrap;gap:3px;margin-bottom:4px;}
 .rec-attr{font-size:9px;padding:1px 5px;border-radius:10px;background:var(--tag-bg);color:var(--tag-text);}
 .rec-score{display:flex;align-items:center;gap:4px;}
@@ -162,45 +207,48 @@ textarea{font:inherit;}
 .gate-badge.ok{background:var(--ok-bg);color:var(--ok);}
 .gate-badge.warn{background:var(--warn-bg);color:var(--warn);}
 
-/* ── Feedback row ── */
+/* ── Feedback ── */
 .fb-row{display:flex;gap:5px;margin-top:8px;padding-top:7px;border-top:1px solid var(--border);}
 .fb-btn{flex:1;display:flex;align-items:center;justify-content:center;gap:3px;padding:4px 0;border:1px solid var(--border);border-radius:6px;background:none;font-size:11px;color:var(--text-dim);transition:all .15s;}
 .fb-btn:hover{border-color:currentColor;}
 .fb-btn.up:hover,.fb-btn.up.active{border-color:var(--up);color:var(--up);background:var(--up-bg);}
 .fb-btn.down:hover,.fb-btn.down.active{border-color:var(--down);color:var(--down);background:var(--down-bg);}
-.fb-btn.synced{opacity:.5;cursor:default;}
 .fb-note-wrap{margin-top:6px;}
 .fb-note-wrap textarea{width:100%;padding:5px 7px;border:1px solid var(--border);border-radius:5px;background:var(--surface2);color:var(--text);font-size:11px;resize:none;outline:none;line-height:1.4;}
-.fb-note-wrap textarea:focus{border-color:var(--gold);}
+.fb-note-wrap textarea:focus{border-color:var(--accent);}
 .fb-note-actions{display:flex;gap:5px;margin-top:4px;}
-.fb-submit{flex:1;padding:4px;border:none;border-radius:5px;background:var(--gold);color:#fff;font-size:11px;font-weight:600;}
+.fb-submit{flex:1;padding:4px;border:none;border-radius:5px;background:var(--accent);color:#fff;font-size:11px;font-weight:600;}
 .fb-cancel{padding:4px 8px;border:1px solid var(--border);border-radius:5px;background:none;color:var(--text-dim);font-size:11px;}
 
+/* ── Misc ── */
 .no-recs{color:var(--text-dim);font-size:12px;padding:14px;background:var(--surface2);border-radius:var(--radius);text-align:center;}
 .rec-cross-cat{margin-bottom:14px;}
 .rec-cross-cat-label{font-size:10px;font-weight:700;color:var(--text-dim);text-transform:uppercase;letter-spacing:.06em;margin-bottom:7px;}
 .ss-note{font-size:11px;color:var(--text-dim);background:var(--ss-bg);border:1px solid rgba(88,101,242,.2);border-radius:var(--radius);padding:8px 12px;margin-bottom:14px;line-height:1.6;}
 .no-ss{color:var(--text-dim);font-size:12px;padding:32px;text-align:center;background:var(--surface2);border-radius:var(--radius);}
+.loading-state{display:flex;align-items:center;justify-content:center;gap:10px;height:200px;color:var(--text-dim);}
+.spinner{width:22px;height:22px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite;flex-shrink:0;}
+@keyframes spin{to{transform:rotate(360deg);}}
 
 /* ── Toast ── */
-#toast{position:fixed;bottom:20px;right:20px;background:var(--navy);color:#fff;font-size:12px;padding:9px 14px;border-radius:var(--radius);box-shadow:var(--shadow-md);transform:translateY(60px);opacity:0;transition:all .25s;z-index:200;max-width:300px;}
+#toast{position:fixed;bottom:20px;right:20px;background:var(--accent);color:#fff;font-size:12px;padding:9px 14px;border-radius:var(--radius);box-shadow:var(--shadow-md);transform:translateY(60px);opacity:0;transition:all .25s;z-index:200;max-width:300px;}
 #toast.show{transform:translateY(0);opacity:1;}
-#toast.err{background:#C0392B;}
+#toast.err{background:#c0392b;}
 
-/* ── Modal overlay ── */
+/* ── Modal ── */
 .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:300;align-items:center;justify-content:center;}
 .modal-overlay.open{display:flex;}
 .modal{background:var(--surface);border-radius:12px;padding:24px;width:440px;max-width:92vw;box-shadow:var(--shadow-md);}
 .modal h2{font-size:15px;font-weight:700;margin-bottom:6px;}
 .modal p{font-size:12px;color:var(--text-dim);line-height:1.6;margin-bottom:14px;}
 .modal label{display:block;font-size:11px;font-weight:600;color:var(--text-mid);margin-bottom:4px;margin-top:12px;}
-.modal input,.modal textarea{width:100%;padding:7px 10px;border:1px solid var(--border);border-radius:6px;background:var(--surface2);color:var(--text);font-size:13px;outline:none;}
-.modal input:focus{border-color:var(--gold);}
+.modal input{width:100%;padding:7px 10px;border:1px solid var(--border);border-radius:6px;background:var(--surface2);color:var(--text);font-size:13px;outline:none;}
+.modal input:focus{border-color:var(--accent);}
 .modal-actions{display:flex;gap:8px;margin-top:18px;justify-content:flex-end;}
-.btn-primary{padding:7px 18px;border:none;border-radius:6px;background:var(--gold);color:#fff;font-size:13px;font-weight:600;}
+.btn-primary{padding:7px 18px;border:none;border-radius:6px;background:var(--accent);color:#fff;font-size:13px;font-weight:600;}
 .btn-ghost{padding:7px 14px;border:1px solid var(--border);border-radius:6px;background:none;color:var(--text-mid);font-size:13px;}
 .modal-note{font-size:10px;color:var(--text-dim);margin-top:8px;line-height:1.5;}
-.modal-note a{color:var(--gold);}
+.modal-note a{color:var(--accent);}
 
 /* ── Feedback queue panel ── */
 #fb-panel{display:none;position:fixed;bottom:16px;right:16px;width:320px;background:var(--surface);border:1px solid var(--border);border-radius:12px;box-shadow:var(--shadow-md);z-index:150;padding:14px;}
@@ -216,72 +264,101 @@ textarea{font:inherit;}
 .fqi-status.pending{background:var(--warn-bg);color:var(--warn);}
 .fb-panel-actions{display:flex;gap:6px;margin-top:10px;}
 .fb-panel-btn{flex:1;padding:6px;border:1px solid var(--border);border-radius:6px;background:var(--surface2);color:var(--text-mid);font-size:11px;}
-.fb-panel-btn:hover{border-color:var(--gold);color:var(--gold);}
+.fb-panel-btn:hover{border-color:var(--accent);color:var(--accent);}
 .fb-panel-close{background:none;border:none;color:var(--text-dim);font-size:16px;line-height:1;padding:0;}
+
+/* Style profile modal */
+#style-modal .style-traits{display:flex;flex-direction:column;gap:8px;margin-top:12px;}
+.style-trait-row{display:flex;align-items:center;gap:10px;}
+.style-trait-label{font-size:12px;color:var(--text-mid);min-width:120px;}
+.style-trait-bar-wrap{flex:1;height:8px;background:var(--border);border-radius:4px;overflow:hidden;}
+.style-trait-bar{height:100%;background:var(--accent);border-radius:4px;}
+.style-trait-pct{font-size:11px;color:var(--text-dim);min-width:28px;text-align:right;}
 </style>
 </head>
 <body>
 <div id="app">
 
-  <div id="header">
-    <h1>BE·ORE</h1>
-    <span class="badge">DEMO</span>
-    <span style="font-size:11px;color:rgba(255,255,255,.4)">Recommendation Engine</span>
-    <span class="spacer"></span>
-    <span id="fb-badge" onclick="toggleFbPanel()">💬 <span id="fb-count">0</span> votes</span>
-    <button class="hdr-btn" onclick="openSetup()">⚙ Feedback setup</button>
-    <button class="hdr-btn" onclick="toggleTheme()">Toggle theme</button>
+  <!-- Top bar -->
+  <div id="top-bar">
+    <div class="logo">BE·ORE <span>REC ENGINE</span></div>
+    <div id="search-wrap-top">
+      <span class="search-icon">🔍</span>
+      <input id="search-top" type="search" placeholder="Search by name or SKU…" oninput="applyFilters()">
+    </div>
+    <div id="cat-pills">
+      <button class="cat-pill active" data-cat="all"      onclick="selectCat('all')">All</button>
+      <button class="cat-pill"        data-cat="rings"    onclick="selectCat('rings')">Rings</button>
+      <button class="cat-pill"        data-cat="earrings" onclick="selectCat('earrings')">Earrings</button>
+      <button class="cat-pill"        data-cat="bracelets" onclick="selectCat('bracelets')">Bracelets</button>
+      <button class="cat-pill"        data-cat="pendants" onclick="selectCat('pendants')">Pendants</button>
+    </div>
+    <div id="top-right">
+      <div class="status-pill"><span class="status-dot" id="ai-dot"></span><span id="ai-label">AI Offline</span></div>
+      <span id="fb-badge" onclick="toggleFbPanel()">💬 <span id="fb-count">0</span> votes</span>
+      <button class="hdr-btn" onclick="openSetup()">⚙ Feedback setup</button>
+      <button class="hdr-btn" onclick="toggleTheme()">◑ Theme</button>
+    </div>
   </div>
 
-  <div id="stats-bar">
-    <span>Catalog: <strong id="stat-total">—</strong> designs</span>
-    <span>Engine: <strong>Embeddings + EvalGate + Rules</strong></span>
-    <span style="margin-left:auto;display:flex;gap:5px;flex-wrap:wrap">
-      <span class="chip live"><span class="dot"></span>Browse &amp; search</span>
-      <span class="chip live"><span class="dot"></span>Variant swatches</span>
-      <span class="chip live"><span class="dot"></span>Similarity recs</span>
-      <span class="chip live"><span class="dot"></span>Rec feedback</span>
-      <span class="chip ss"><span class="dot"></span>Searchspring comparison</span>
-      <span class="chip soon"><span class="dot"></span>Personalized ranking (with server)</span>
-    </span>
-  </div>
+  <!-- Body -->
+  <div id="body">
 
-  <div id="main-area">
-    <div id="sidebar">
-      <div id="cat-tabs">
-        <button class="cat-tab active" data-cat="rings"     onclick="selectCat('rings')">Rings</button>
-        <button class="cat-tab"        data-cat="earrings"  onclick="selectCat('earrings')">Earrings</button>
-        <button class="cat-tab"        data-cat="bracelets" onclick="selectCat('bracelets')">Bracelets</button>
-        <button class="cat-tab"        data-cat="pendants"  onclick="selectCat('pendants')">Pendants</button>
-      </div>
-      <div id="search-wrap">
-        <input id="search" type="search" placeholder="Search by name or SKU…" oninput="applyFilters()">
-        <div id="filter-row">
-          <select class="filter-select" id="filter-style" onchange="applyFilters()"><option value="">All styles</option></select>
-          <select class="filter-select" id="filter-price" onchange="applyFilters()">
-            <option value="">Any price</option>
-            <option value="0-1000">Under $1K</option>
-            <option value="1000-3000">$1K–$3K</option>
-            <option value="3000-8000">$3K–$8K</option>
-            <option value="8000-999999">$8K+</option>
-          </select>
+    <!-- Session Intelligence sidebar -->
+    <div id="session-sidebar">
+      <div class="ss-section">
+        <div class="ss-section-title">Recently Viewed</div>
+        <div id="session-history-list">
+          <div id="session-empty">Browse products to build your session</div>
         </div>
       </div>
-      <div id="product-count"></div>
-      <div id="product-list-wrap">
-        <div id="product-list"><div class="loading-state"><div class="spinner"></div><span>Loading…</span></div></div>
-        <div id="load-more-wrap" style="display:none"><button id="load-more" onclick="loadMore()">Load more</button></div>
+
+      <div class="ss-section" id="trend-panel">
+        <div class="ss-section-title">What you're drawn to</div>
+        <div id="trend-rows"></div>
+      </div>
+
+      <div id="tailor-section">
+        <div class="tailor-row">
+          <span class="tailor-label">Tailor Recs</span>
+          <div class="toggle-wrap">
+            <span class="tailor-status off" id="tailor-status">Off</span>
+            <button class="toggle" id="tailor-toggle" onclick="onTailoredToggle(!state.tailoredRecs)"></button>
+          </div>
+        </div>
+        <div class="tailor-note" id="tailor-note">Browse more to build context</div>
+      </div>
+
+      <div id="sidebar-actions">
+        <button class="style-btn" onclick="showStyleProfile()">✨ What's my style?</button>
+        <button class="session-log-btn" onclick="exportSession()">⬇ Download Session Log</button>
       </div>
     </div>
 
-    <div id="content">
-      <div id="empty-state">
-        <div class="icon">💎</div>
-        <h2 style="font-size:17px;font-weight:600">Select a product</h2>
-        <p>Browse the catalog on the left. Use thumbs up/down on any rec to log feedback — it commits directly to GitHub as training data.</p>
-        <p style="margin-top:6px">Click <strong>⚙ Feedback setup</strong> in the header to configure your GitHub token.</p>
+    <!-- Main: gallery + PDP -->
+    <div id="main">
+      <div id="filter-bar">
+        <span class="filter-label">Max price</span>
+        <input id="price-slider" type="range" min="0" max="50000" step="500" value="50000" oninput="onPriceSlider()">
+        <span id="price-display">Any</span>
+        <select class="filter-select" id="filter-style" onchange="applyFilters()"><option value="">All styles</option></select>
+        <label class="highlight-row">
+          <input type="checkbox" id="highlight-session" onchange="renderGallery()">
+          Highlight session recs
+        </label>
       </div>
-      <div id="product-detail" style="display:none"></div>
+      <div id="product-count-bar"></div>
+
+      <!-- Gallery -->
+      <div id="gallery-wrap">
+        <div id="gallery"><div class="loading-state"><div class="spinner"></div><span>Loading catalog…</span></div></div>
+        <div id="load-more-wrap" style="display:none">
+          <button class="load-more-btn" onclick="loadMore()">Load more</button>
+        </div>
+      </div>
+
+      <!-- PDP -->
+      <div id="pdp"></div>
     </div>
   </div>
 </div>
@@ -291,19 +368,26 @@ textarea{font:inherit;}
   <div class="modal">
     <h2>Feedback setup</h2>
     <p>Votes are committed directly to <code>feedback/queue.jsonl</code> in the demo repo. You need a GitHub fine-grained token with <strong>Contents: Read &amp; write</strong> on <code>jordan-at-brilliant/be-ore-demo</code>.</p>
-    <label>Your name (appears in feedback)</label>
+    <label>Your name</label>
     <input id="setup-name" type="text" placeholder="e.g. Jordan" autocomplete="name">
     <label>GitHub token</label>
     <input id="setup-token" type="password" placeholder="github_pat_…">
-    <p class="modal-note">
-      Create one at <a href="https://github.com/settings/tokens?type=beta" target="_blank">github.com/settings/tokens</a> →
-      Fine-grained → Repository access: <em>jordan-at-brilliant/be-ore-demo</em> → Permissions → Contents: Read and write.
-    </p>
-    <p class="modal-note" style="margin-top:6px">If no token is set, votes are queued locally and you can export them as JSON.</p>
+    <p class="modal-note">Create at <a href="https://github.com/settings/tokens?type=beta" target="_blank">github.com/settings/tokens</a> → Fine-grained → Repository: <em>jordan-at-brilliant/be-ore-demo</em> → Contents: Read and write.</p>
+    <p class="modal-note" style="margin-top:6px">Without a token, votes queue locally and can be exported as JSON.</p>
     <div class="modal-actions">
       <button class="btn-ghost" onclick="closeSetup()">Cancel</button>
       <button class="btn-primary" onclick="saveSetup()">Save</button>
     </div>
+  </div>
+</div>
+
+<!-- Style profile modal -->
+<div class="modal-overlay" id="style-modal">
+  <div class="modal">
+    <h2>✨ Your style profile</h2>
+    <p id="style-modal-desc">Based on your session browsing.</p>
+    <div class="style-traits" id="style-traits"></div>
+    <div class="modal-actions"><button class="btn-primary" onclick="document.getElementById('style-modal').classList.remove('open')">Done</button></div>
   </div>
 </div>
 
@@ -321,35 +405,45 @@ textarea{font:inherit;}
 <div id="toast"></div>
 
 <script>
-// ════════════════════════════════════════════════════════════
-// Constants & state
-// ════════════════════════════════════════════════════════════
-const DATA = 'data';
-const ICONS = {rings:'💍',earrings:'✨',bracelets:'📿',pendants:'🏅'};
-const PAGE_SIZE = 40;
-const GH_REPO = 'jordan-at-brilliant/be-ore-demo';
-const GH_FILE = 'feedback/queue.jsonl';
-const LS_TOKEN  = 'ore_gh_token';
-const LS_NAME   = 'ore_tester_name';
-const LS_VOTES  = 'ore_votes';    // {voteKey: {vote, note, ts, synced}}
-const LS_QUEUE  = 'ore_fb_queue'; // [{...entry, synced:false}] for retry
+// ═══════════════════════════════════════════════════
+// Constants
+// ═══════════════════════════════════════════════════
+const DATA     = 'data';
+const ICONS    = {rings:'💍',earrings:'✨',bracelets:'📿',pendants:'🏅'};
+const PAGE_SIZE= 48;
+const GH_REPO  = 'jordan-at-brilliant/be-ore-demo';
+const GH_FILE  = 'feedback/queue.jsonl';
+const LS_TOKEN = 'ore_gh_token';
+const LS_NAME  = 'ore_tester_name';
+const LS_VOTES = 'ore_votes';
+const LS_QUEUE = 'ore_fb_queue';
+const CATS     = ['rings','earrings','bracelets','pendants'];
 
-let currentCat  = 'rings';
-let catalog     = {};
-let recs        = {};
-let ssData      = null;
-let filtered    = [];
-let page        = 0;
-let selectedBase= null;
-let selectedSku = null;
-let loadedCats  = {};
-let activeView  = 'ore';
-let votes       = {};   // loaded from LS
-let fbQueue     = [];   // loaded from LS
+// ═══════════════════════════════════════════════════
+// State
+// ═══════════════════════════════════════════════════
+const state = {
+  currentCat: 'all',
+  view: 'gallery',
+  selectedBase: null,
+  selectedSku: null,
+  page: 0,
+  priceMax: 50000,
+  filtered: [],
+  activeRecView: 'ore',
+  tailoredRecs: false,
+  session: { history: [], events: [] },
+};
+
+let loadedCats = {};   // {cat: {catalog, recs}}
+let ssData     = null;
+let votes      = {};
+let fbQueue    = [];
+let _cardIdx   = 0;
 
 function loadLS() {
-  try { votes   = JSON.parse(localStorage.getItem(LS_VOTES)  || '{}'); } catch(e){}
-  try { fbQueue = JSON.parse(localStorage.getItem(LS_QUEUE)  || '[]'); } catch(e){}
+  try { votes   = JSON.parse(localStorage.getItem(LS_VOTES) || '{}'); } catch(e){}
+  try { fbQueue = JSON.parse(localStorage.getItem(LS_QUEUE) || '[]'); } catch(e){}
 }
 function saveLS() {
   localStorage.setItem(LS_VOTES, JSON.stringify(votes));
@@ -357,81 +451,77 @@ function saveLS() {
 }
 loadLS();
 
-// ════════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════
 // Theme
-// ════════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════
 function toggleTheme() {
   const cur = document.documentElement.getAttribute('data-theme');
-  document.documentElement.setAttribute('data-theme', cur==='dark'?'light':'dark');
+  document.documentElement.setAttribute('data-theme', cur === 'dark' ? 'light' : 'dark');
 }
 
-// ════════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════
 // Toast
-// ════════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════
 let toastTimer;
 function showToast(msg, isErr=false) {
   const el = document.getElementById('toast');
   el.textContent = msg;
-  el.className   = 'show' + (isErr?' err':'');
+  el.className = 'show' + (isErr ? ' err' : '');
   clearTimeout(toastTimer);
-  toastTimer = setTimeout(()=>el.className='', 3200);
+  toastTimer = setTimeout(() => el.className = '', 3200);
 }
 
-// ════════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════
 // Setup modal
-// ════════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════
 function openSetup() {
   document.getElementById('setup-name').value  = localStorage.getItem(LS_NAME)  || '';
   document.getElementById('setup-token').value = localStorage.getItem(LS_TOKEN) || '';
   document.getElementById('setup-modal').classList.add('open');
 }
-function closeSetup() {
-  document.getElementById('setup-modal').classList.remove('open');
-}
+function closeSetup() { document.getElementById('setup-modal').classList.remove('open'); }
 function saveSetup() {
   const name  = document.getElementById('setup-name').value.trim();
   const token = document.getElementById('setup-token').value.trim();
   if (!name) { showToast('Please enter your name.', true); return; }
-  localStorage.setItem(LS_NAME,  name);
+  localStorage.setItem(LS_NAME, name);
   localStorage.setItem(LS_TOKEN, token);
   closeSetup();
-  showToast(token ? `Saved — votes will commit to GitHub as ${name}` : `Saved — votes will queue locally as ${name}`);
+  showToast(token ? `Saved — votes will commit as ${name}` : `Saved — votes queued locally as ${name}`);
 }
 
-// ════════════════════════════════════════════════════════════
-// Feedback queue panel
-// ════════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════
+// Feedback panel
+// ═══════════════════════════════════════════════════
 function toggleFbPanel() {
   const panel = document.getElementById('fb-panel');
   panel.classList.toggle('open');
   if (panel.classList.contains('open')) renderFbPanel();
 }
 function renderFbPanel() {
-  const entries = Object.values(votes).sort((a,b)=>b.ts.localeCompare(a.ts)).slice(0,30);
+  const entries = Object.values(votes).sort((a,b) => b.ts.localeCompare(a.ts)).slice(0, 30);
   const list = document.getElementById('fb-queue-list');
-  if (!entries.length) { list.innerHTML='<div class="no-recs">No votes yet.</div>'; return; }
-  list.innerHTML = entries.map(e=>`
+  if (!entries.length) { list.innerHTML = '<div class="no-recs">No votes yet.</div>'; return; }
+  list.innerHTML = entries.map(e => `
     <div class="fb-queue-item">
-      <span class="fqi-vote">${e.vote==='up'?'👍':'👎'}</span>
+      <span class="fqi-vote">${e.vote === 'up' ? '👍' : '👎'}</span>
       <div class="fqi-info">
         <div class="fqi-skus">${e.anchor_sku} → ${e.rec_sku}</div>
-        <div style="font-size:10px;color:var(--text-dim)">${e.fn} · ${e.tester}${e.note?' · "'+e.note+'"':''}</div>
+        <div style="font-size:10px;color:var(--text-dim)">${e.fn} · ${e.tester}${e.note ? ' · "' + e.note + '"' : ''}</div>
       </div>
-      <span class="fqi-status ${e.synced?'synced':'pending'}">${e.synced?'✓ synced':'pending'}</span>
+      <span class="fqi-status ${e.synced ? 'synced' : 'pending'}">${e.synced ? '✓ synced' : 'pending'}</span>
     </div>`).join('');
 }
 function updateFbBadge() {
   const n = Object.keys(votes).length;
-  const badge = document.getElementById('fb-badge');
   document.getElementById('fb-count').textContent = n;
-  badge.classList.toggle('show', n>0);
+  document.getElementById('fb-badge').classList.toggle('show', n > 0);
 }
 
 function exportFeedback() {
   const entries = Object.values(votes);
   if (!entries.length) { showToast('No votes to export.'); return; }
-  const jsonl = entries.map(e=>JSON.stringify(e)).join('\n');
-  const blob = new Blob([jsonl], {type:'application/x-ndjson'});
+  const blob = new Blob([entries.map(e => JSON.stringify(e)).join('\n')], {type:'application/x-ndjson'});
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
   a.download = `ore-feedback-${new Date().toISOString().slice(0,10)}.jsonl`;
@@ -440,8 +530,8 @@ function exportFeedback() {
 
 async function syncPending() {
   const token = localStorage.getItem(LS_TOKEN);
-  if (!token) { showToast('No GitHub token configured — open ⚙ Feedback setup.', true); return; }
-  const pending = Object.values(votes).filter(e=>!e.synced);
+  if (!token) { showToast('No GitHub token — open ⚙ Feedback setup.', true); return; }
+  const pending = Object.values(votes).filter(e => !e.synced);
   if (!pending.length) { showToast('Nothing pending.'); return; }
   showToast(`Syncing ${pending.length} votes…`);
   let ok = 0;
@@ -449,15 +539,14 @@ async function syncPending() {
     const success = await ghAppend(entry, token);
     if (success) { votes[voteKey(entry.anchor_sku, entry.fn, entry.rec_sku)].synced = true; ok++; }
   }
-  saveLS();
-  updateFbBadge();
-  showToast(ok===pending.length ? `Synced ${ok} votes ✓` : `Synced ${ok}/${pending.length} — check token.`, ok<pending.length);
+  saveLS(); updateFbBadge();
+  showToast(ok === pending.length ? `Synced ${ok} votes ✓` : `Synced ${ok}/${pending.length} — check token.`, ok < pending.length);
   if (document.getElementById('fb-panel').classList.contains('open')) renderFbPanel();
 }
 
-// ════════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════
 // GitHub Contents API
-// ════════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════
 async function ghAppend(entry, token) {
   const api = `https://api.github.com/repos/${GH_REPO}/contents/${GH_FILE}`;
   const headers = {
@@ -465,8 +554,6 @@ async function ghAppend(entry, token) {
     'Accept': 'application/vnd.github+json',
     'X-GitHub-Api-Version': '2022-11-28',
   };
-
-  // GET current file (may not exist yet)
   let sha = null, currentLines = '';
   try {
     const res = await fetch(api, {headers});
@@ -474,321 +561,359 @@ async function ghAppend(entry, token) {
       const data = await res.json();
       sha = data.sha;
       currentLines = atob(data.content.replace(/\n/g,''));
-    } else if (res.status !== 404) {
-      return false;
-    }
+    } else if (res.status !== 404) { return false; }
   } catch(e) { return false; }
-
-  // Append new line
-  const newContent = (currentLines ? currentLines.trimEnd()+'\n' : '') + JSON.stringify(entry) + '\n';
+  const newContent = (currentLines ? currentLines.trimEnd() + '\n' : '') + JSON.stringify(entry) + '\n';
   const encoded = btoa(unescape(encodeURIComponent(newContent)));
-
-  const body = {
-    message: `feedback: ${entry.vote} ${entry.anchor_sku}→${entry.rec_sku} (${entry.tester})`,
-    content: encoded,
-    ...(sha ? {sha} : {}),
-  };
-
+  const body = { message: `feedback: ${entry.vote} ${entry.anchor_sku}→${entry.rec_sku} (${entry.tester})`, content: encoded, ...(sha ? {sha} : {}) };
   try {
     const res = await fetch(api, {method:'PUT', headers:{...headers,'Content-Type':'application/json'}, body:JSON.stringify(body)});
-    return res.ok || res.status===201;
+    return res.ok || res.status === 201;
   } catch(e) { return false; }
 }
 
-// ════════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════
 // Vote submission
-// ════════════════════════════════════════════════════════════
-function voteKey(anchorSku, fn, recSku) {
-  return `${anchorSku}|${fn}|${recSku}`;
-}
+// ═══════════════════════════════════════════════════
+function voteKey(anchorSku, fn, recSku) { return `${anchorSku}|${fn}|${recSku}`; }
 
 async function submitVote(anchorSku, fn, recSku, vote, note, cardId) {
   const tester = localStorage.getItem(LS_NAME);
-  if (!tester) {
-    openSetup();
-    showToast('Please set your name first.', true);
-    return;
-  }
-
+  if (!tester) { openSetup(); showToast('Please set your name first.', true); return; }
   const key = voteKey(anchorSku, fn, recSku);
-  const entry = {
-    ts: new Date().toISOString(),
-    tester,
-    anchor_sku: anchorSku,
-    anchor_cat: currentCat,
-    fn,
-    rec_sku:    recSku,
-    vote,
-    note: note || '',
-    synced: false,
-  };
-
+  const entry = { ts: new Date().toISOString(), tester, anchor_sku: anchorSku, anchor_cat: state.currentCat, fn, rec_sku: recSku, vote, note: note || '', synced: false };
   votes[key] = entry;
-  saveLS();
-  updateFbBadge();
-
-  // Update card UI immediately
+  saveLS(); updateFbBadge();
   updateCardFeedbackUI(cardId, vote, note);
-
-  // Try GitHub sync
   const token = localStorage.getItem(LS_TOKEN);
   if (token) {
     const ok = await ghAppend(entry, token);
-    if (ok) {
-      votes[key].synced = true;
-      saveLS();
-      showToast(`${vote==='up'?'👍':'👎'} Saved to GitHub`);
-    } else {
-      showToast('Queued locally — sync failed, will retry.', true);
-    }
-  } else {
-    showToast(`${vote==='up'?'👍':'👎'} Queued locally (no GitHub token set)`);
-  }
-
+    if (ok) { votes[key].synced = true; saveLS(); showToast(`${vote==='up'?'👍':'👎'} Saved to GitHub`); }
+    else { showToast('Queued locally — sync failed.', true); }
+  } else { showToast(`${vote==='up'?'👍':'👎'} Queued locally (no token set)`); }
   if (document.getElementById('fb-panel').classList.contains('open')) renderFbPanel();
 }
 
 function updateCardFeedbackUI(cardId, vote, note) {
   const card = document.getElementById(cardId);
   if (!card) return;
-  const upBtn  = card.querySelector('.fb-btn.up');
-  const downBtn= card.querySelector('.fb-btn.down');
-  const noteWrap = card.querySelector('.fb-note-wrap');
-  if (upBtn)   upBtn.classList.toggle('active', vote==='up');
-  if (downBtn) downBtn.classList.toggle('active', vote==='down');
-  if (noteWrap && vote==='up') noteWrap.style.display='none';
+  card.querySelector('.fb-btn.up')?.classList.toggle('active', vote === 'up');
+  card.querySelector('.fb-btn.down')?.classList.toggle('active', vote === 'down');
+  if (vote === 'up') { const nw = card.querySelector('.fb-note-wrap'); if (nw) nw.style.display = 'none'; }
 }
 
-function toggleNote(cardId, anchorSku, fn, recSku) {
+function toggleNote(cardId) {
   const card = document.getElementById(cardId);
   if (!card) return;
   const wrap = card.querySelector('.fb-note-wrap');
   const open = wrap.style.display !== 'none' && wrap.style.display !== '';
-  if (open) { wrap.style.display='none'; return; }
-  wrap.style.display='block';
-  const ta = wrap.querySelector('textarea');
-  if (ta) { ta.focus(); }
+  wrap.style.display = open ? 'none' : 'block';
+  if (!open) wrap.querySelector('textarea')?.focus();
 }
 
 function submitNote(cardId, anchorSku, fn, recSku) {
   const card = document.getElementById(cardId);
   if (!card) return;
   const note = card.querySelector('textarea')?.value?.trim() || '';
-  card.querySelector('.fb-note-wrap').style.display='none';
+  card.querySelector('.fb-note-wrap').style.display = 'none';
   submitVote(anchorSku, fn, recSku, 'down', note, cardId);
 }
 
-// ════════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════
 // Utilities
-// ════════════════════════════════════════════════════════════
-function fmtLabel(s) { return (s||'').replace(/_/g,' ').replace(/\b\w/g,c=>c.toUpperCase()); }
-function fmtPrice(p) { return p ? '$'+Number(p).toLocaleString() : ''; }
+// ═══════════════════════════════════════════════════
+function fmtLabel(s) { return (s||'').replace(/_/g,' ').replace(/\b\w/g, c => c.toUpperCase()); }
+function fmtPrice(p) { return p ? '$' + Number(p).toLocaleString() : ''; }
+function he(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 
-// ════════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════
 // Data loading
-// ════════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════
 async function loadCat(cat) {
   if (loadedCats[cat]) return;
-  showListLoading();
   const [catData, recData] = await Promise.all([
-    fetch(`${DATA}/catalog_${cat}.json`).then(r=>r.json()),
-    fetch(`${DATA}/recs_${cat}.json`).then(r=>r.json()),
+    fetch(`${DATA}/catalog_${cat}.json`).then(r => r.json()),
+    fetch(`${DATA}/recs_${cat}.json`).then(r => r.json()),
   ]);
-  loadedCats[cat] = {catalog:catData, recs:recData};
+  loadedCats[cat] = {catalog: catData, recs: recData};
 }
+
 async function ensureSS() {
   if (ssData) return;
-  ssData = await fetch(`${DATA}/ss_comparison.json`).then(r=>r.json()).catch(()=>({}));
-}
-function showListLoading() {
-  document.getElementById('product-list').innerHTML =
-    '<div class="loading-state"><div class="spinner"></div><span>Loading catalog…</span></div>';
-  document.getElementById('load-more-wrap').style.display='none';
+  ssData = await fetch(`${DATA}/ss_comparison.json`).then(r => r.json()).catch(() => ({}));
 }
 
-// ════════════════════════════════════════════════════════════
-// Category
-// ════════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════
+// Category selection
+// ═══════════════════════════════════════════════════
 async function selectCat(cat) {
-  currentCat=cat; selectedBase=null; selectedSku=null;
-  document.querySelectorAll('.cat-tab').forEach(t=>t.classList.toggle('active',t.dataset.cat===cat));
-  document.getElementById('empty-state').style.display='';
-  document.getElementById('product-detail').style.display='none';
-  document.getElementById('search').value='';
-  await loadCat(cat);
-  catalog = loadedCats[cat].catalog;
-  recs    = loadedCats[cat].recs;
-  document.getElementById('stat-total').textContent=Object.keys(catalog).length.toLocaleString();
-  populateFilters();
+  state.currentCat = cat;
+  document.querySelectorAll('.cat-pill').forEach(p => p.classList.toggle('active', p.dataset.cat === cat));
+
+  // Load required categories
+  const catsToLoad = cat === 'all' ? CATS : [cat];
+  document.getElementById('gallery').innerHTML = '<div class="loading-state"><div class="spinner"></div><span>Loading catalog…</span></div>';
+  await Promise.all(catsToLoad.map(loadCat));
+
+  // Rebuild style filter
+  populateStyleFilter();
+  applyFilters();
+
+  // If currently in PDP, go back to gallery
+  if (state.view === 'pdp') showGallery();
+}
+
+function populateStyleFilter() {
+  const cats = state.currentCat === 'all' ? CATS : [state.currentCat];
+  const styles = new Set();
+  cats.forEach(c => Object.values(loadedCats[c]?.catalog || {}).forEach(p => { if (p.style) styles.add(p.style); }));
+  const sel = document.getElementById('filter-style');
+  sel.innerHTML = `<option value="">All styles</option>` + [...styles].sort().map(s => `<option value="${s}">${fmtLabel(s)}</option>`).join('');
+}
+
+// ═══════════════════════════════════════════════════
+// Filtering
+// ═══════════════════════════════════════════════════
+function onPriceSlider() {
+  state.priceMax = Number(document.getElementById('price-slider').value);
+  document.getElementById('price-display').textContent = state.priceMax >= 50000 ? 'Any' : fmtPrice(state.priceMax);
   applyFilters();
 }
-function populateFilters() {
-  const styles=[...new Set(Object.values(catalog).map(p=>p.style).filter(Boolean))].sort();
-  const sel=document.getElementById('filter-style');
-  sel.innerHTML=`<option value="">All styles</option>`+styles.map(s=>`<option value="${s}">${fmtLabel(s)}</option>`).join('');
-}
 
-// ════════════════════════════════════════════════════════════
-// Filtering & list
-// ════════════════════════════════════════════════════════════
 function applyFilters() {
-  const q    =document.getElementById('search').value.toLowerCase();
-  const style=document.getElementById('filter-style').value;
-  const price=document.getElementById('filter-price').value;
-  filtered=Object.entries(catalog).filter(([base,p])=>{
-    if(q&&!p.name.toLowerCase().includes(q)&&!base.toLowerCase().includes(q))return false;
-    if(style&&p.style!==style)return false;
-    if(price){const[lo,hi]=price.split('-').map(Number);if((p.price||0)<lo||(p.price||0)>hi)return false;}
+  const q     = document.getElementById('search-top').value.toLowerCase();
+  const style = document.getElementById('filter-style').value;
+  const cats  = state.currentCat === 'all' ? CATS : [state.currentCat];
+
+  const all = [];
+  cats.forEach(c => {
+    Object.entries(loadedCats[c]?.catalog || {}).forEach(([base, p]) => {
+      all.push([base, p, c]);
+    });
+  });
+
+  state.filtered = all.filter(([base, p]) => {
+    if (q && !p.name.toLowerCase().includes(q) && !base.toLowerCase().includes(q)) return false;
+    if (style && p.style !== style) return false;
+    if (state.priceMax < 50000 && (p.price || 0) > state.priceMax) return false;
     return true;
   });
-  page=0; renderList();
+
+  state.page = 0;
+  renderGallery();
 }
-function renderList() {
-  const slice=filtered.slice(0,(page+1)*PAGE_SIZE);
-  const icon=ICONS[currentCat]||'💎';
-  document.getElementById('product-list').innerHTML=slice.map(([base,p])=>{
-    const active=base===selectedBase?' active':'';
-    const thumb=p.image?`<img src="${p.image}" alt="" loading="lazy" onerror="this.style.display='none'">`:'icon';
-    const vc=p.variants?.length>1?`<div class="p-vc">${p.variants.length} metals</div>`:'';
-    return `<div class="product-row${active}" onclick="selectProduct('${base}')">
-      <div class="p-thumb">${p.image?`<img src="${p.image}" alt="" loading="lazy" onerror="this.style.display='none'">`:`${icon}`}</div>
-      <div class="p-info">
-        <div class="p-name">${p.name||base}</div>
-        <div class="p-sku">${base}</div>
-        <div class="p-meta">${fmtPrice(p.price)}</div>
-        ${vc}
+
+// ═══════════════════════════════════════════════════
+// Gallery rendering
+// ═══════════════════════════════════════════════════
+const sessionRecSet = () => {
+  if (!state.tailoredRecs || state.session.history.length < 2) return new Set();
+  const trends = trendAttributes().slice(0,2).map(t => t.key);
+  if (!trends.length) return new Set();
+  const viewedBases = new Set(state.session.history.map(h => h.base));
+  const result = new Set();
+  CATS.forEach(c => {
+    Object.entries(loadedCats[c]?.catalog || {}).forEach(([base, p]) => {
+      if (viewedBases.has(base)) return;
+      const vals = p.tags || [];
+      if (trends.some(t => vals.some(v => (v||'').toLowerCase().includes(t.toLowerCase())))) result.add(base);
+    });
+  });
+  return result;
+};
+
+function renderGallery() {
+  const highlight = document.getElementById('highlight-session').checked;
+  const sessionSet = highlight ? sessionRecSet() : new Set();
+  const slice = state.filtered.slice(0, (state.page + 1) * PAGE_SIZE);
+
+  document.getElementById('product-count-bar').textContent =
+    `${state.filtered.length.toLocaleString()} designs`;
+
+  document.getElementById('gallery').innerHTML = slice.map(([base, p, cat]) => {
+    const icon   = ICONS[cat || p.category] || '💎';
+    const isHL   = sessionSet.has(base);
+    const swatches = (p.variants || []).slice(0, 5).map(v =>
+      `<span class="g-swatch-dot" style="background:${v.swatch||'#CCC'}" title="${v.label||v.suffix}"></span>`
+    ).join('');
+    return `<div class="g-card${isHL?' session-highlight':''}" onclick="openPDP('${base}','${cat||p.category||state.currentCat}')">
+      <div class="g-img-wrap">
+        ${p.image
+          ? `<img src="${he(p.image)}" alt="" loading="lazy" onerror="this.parentNode.innerHTML='<div class=g-img-placeholder>${icon}</div>'">`
+          : `<div class="g-img-placeholder">${icon}</div>`}
+        ${swatches.length ? `<div class="g-swatches">${swatches}</div>` : ''}
+      </div>
+      <div class="g-info">
+        <div class="g-name">${he(p.name||base)}</div>
+        <div class="g-price">${fmtPrice(p.price)}</div>
+        ${p.style ? `<div class="g-tag">${fmtLabel(p.style)}</div>` : ''}
       </div>
     </div>`;
   }).join('');
-  document.getElementById('product-count').textContent=`${filtered.length.toLocaleString()} designs`;
-  const hasMore=filtered.length>slice.length;
-  document.getElementById('load-more-wrap').style.display=hasMore?'':'none';
-  if(hasMore) document.getElementById('load-more').textContent=`Load more (${filtered.length-slice.length} remaining)`;
-}
-function loadMore(){page++;renderList();}
 
-// ════════════════════════════════════════════════════════════
-// Product selection & detail
-// ════════════════════════════════════════════════════════════
-async function selectProduct(base, variantSku) {
-  selectedBase=base;
-  const design=catalog[base];
-  if(!design)return;
-  selectedSku=variantSku||design.variants?.[0]?.sku||base;
-  document.querySelectorAll('.product-row').forEach(r=>r.classList.remove('active'));
-  document.querySelectorAll('.product-row').forEach(r=>{
-    if(r.querySelector('.p-sku')?.textContent===base)r.classList.add('active');
-  });
-  await ensureSS();
-  document.getElementById('empty-state').style.display='none';
-  document.getElementById('product-detail').style.display='';
-  document.getElementById('product-detail').innerHTML=buildDetail();
-  document.getElementById('content').scrollTop=0;
-}
-
-function switchVariant(sku) {
-  selectedSku=sku;
-  const design=catalog[selectedBase];
-  const v=design?.variants?.find(v=>v.sku===sku);
-  if(v){
-    const imgEl=document.getElementById('detail-img-el');
-    if(imgEl){if(v.image){imgEl.src=v.image;imgEl.style.display='';}else imgEl.style.display='none';}
-    const priceEl=document.getElementById('detail-price-el');
-    if(priceEl&&v.price)priceEl.textContent='$'+Number(v.price).toLocaleString();
-    const skuEl=document.getElementById('detail-sku-el');
-    if(skuEl)skuEl.textContent=sku;
+  const hasMore = state.filtered.length > slice.length;
+  const lmWrap = document.getElementById('load-more-wrap');
+  lmWrap.style.display = hasMore ? '' : 'none';
+  if (hasMore) {
+    lmWrap.querySelector('.load-more-btn').textContent =
+      `Load more (${state.filtered.length - slice.length} remaining)`;
   }
-  document.querySelectorAll('.swatch').forEach(s=>s.classList.toggle('active',s.dataset.sku===sku));
-  const ra=document.getElementById('recs-area');
-  if(ra)ra.innerHTML=buildRecsArea();
 }
 
-function buildDetail() {
-  const design=catalog[selectedBase];
-  if(!design)return'';
-  const icon=ICONS[currentCat]||'💎';
-  const v=design.variants?.find(v=>v.sku===selectedSku)||design.variants?.[0]||{};
-  const img=v.image||design.image||'';
+function loadMore() { state.page++; renderGallery(); }
 
-  const tags=[
-    design.gem_family&&design.gem_family!=='no_gem'&&`<span class="tag">${fmtLabel(design.gem_family)}</span>`,
-    design.style&&`<span class="tag hi">${fmtLabel(design.style)}</span>`,
-    design.occasion&&`<span class="tag">${fmtLabel(design.occasion)}</span>`,
-    design.visual_era&&`<span class="tag">${fmtLabel(design.visual_era)}</span>`,
-    design.design_motif&&`<span class="tag">${fmtLabel(design.design_motif)}</span>`,
-    design.luxury_register&&`<span class="tag">${fmtLabel(design.luxury_register)}</span>`,
+// ═══════════════════════════════════════════════════
+// PDP
+// ═══════════════════════════════════════════════════
+async function openPDP(base, cat) {
+  // Make sure the cat data is loaded
+  const actualCat = cat && loadedCats[cat] ? cat : CATS.find(c => loadedCats[c]?.catalog?.[base]);
+  if (!actualCat) return;
+
+  state.selectedBase = base;
+  const design = loadedCats[actualCat].catalog[base];
+  if (!design) return;
+  state.selectedSku = design.variants?.[0]?.sku || base;
+  state.activeRecView = 'ore';
+
+  trackView(base, design, actualCat);
+  await ensureSS();
+
+  showPDP();
+  renderPDP(actualCat);
+}
+
+function showPDP() {
+  state.view = 'pdp';
+  document.getElementById('gallery-wrap').style.display = 'none';
+  document.getElementById('filter-bar').style.display = 'none';
+  document.getElementById('product-count-bar').style.display = 'none';
+  document.getElementById('pdp').style.display = '';
+}
+
+function showGallery() {
+  state.view = 'gallery';
+  state.selectedBase = null;
+  state.selectedSku = null;
+  document.getElementById('gallery-wrap').style.display = '';
+  document.getElementById('filter-bar').style.display = '';
+  document.getElementById('product-count-bar').style.display = '';
+  document.getElementById('pdp').style.display = 'none';
+}
+
+function renderPDP(cat) {
+  const design = loadedCats[cat]?.catalog[state.selectedBase];
+  if (!design) return;
+  const recs   = loadedCats[cat]?.recs || {};
+  const icon   = ICONS[cat] || '💎';
+  const v      = design.variants?.find(vv => vv.sku === state.selectedSku) || design.variants?.[0] || {};
+  const img    = v.image || design.image || '';
+
+  const variantPills = (design.variants || []).length > 1 ? `
+    <div class="pdp-variants-label">Metal / Karat</div>
+    <div class="pdp-variants">
+      ${(design.variants||[]).map(vv => `
+        <button class="v-pill${vv.sku===state.selectedSku?' active':''}" data-sku="${he(vv.sku)}" onclick="switchVariant('${he(vv.sku)}','${cat}')">
+          <span class="v-dot" style="background:${vv.swatch||'#CCC'}"></span>
+          ${he(vv.label||vv.suffix)}
+          ${vv.price ? `<span style="color:var(--text-dim);font-size:10px">&nbsp;${fmtPrice(vv.price)}</span>` : ''}
+        </button>`).join('')}
+    </div>` : '';
+
+  const tags = [
+    design.gem_family && design.gem_family !== 'no_gem' && `<span class="tag">${fmtLabel(design.gem_family)}</span>`,
+    design.style     && `<span class="tag hi">${fmtLabel(design.style)}</span>`,
+    design.occasion  && `<span class="tag">${fmtLabel(design.occasion)}</span>`,
+    design.visual_era&& `<span class="tag">${fmtLabel(design.visual_era)}</span>`,
+    design.design_motif && `<span class="tag">${fmtLabel(design.design_motif)}</span>`,
   ].filter(Boolean).join('');
 
-  const variants=design.variants||[];
-  const swatches=variants.length>1?`
-    <div class="variants-row">
-      <span class="variants-label">Metal</span>
-      ${variants.map(vv=>`
-        <button class="swatch${vv.sku===selectedSku?' active':''}" data-sku="${vv.sku}" onclick="switchVariant('${vv.sku}')">
-          <span class="swatch-dot" style="background:${vv.swatch||'#CCC'}"></span>
-          ${vv.label||vv.suffix}
-          ${vv.price?`<span style="color:var(--text-dim);font-size:10px">$${Number(vv.price).toLocaleString()}</span>`:''}
-        </button>`).join('')}
-    </div>`:'';
+  const hasSS = !!(ssData?.[cat]?.[state.selectedBase]);
 
-  const hasSS=!!(ssData?.[currentCat]?.[selectedBase]);
-  return `
-  <div class="detail-header">
-    <div class="detail-img">
-      ${img?`<img id="detail-img-el" src="${img}" alt="${design.name||selectedBase}" onerror="this.style.display='none'">`:`${icon}`}
+  document.getElementById('pdp').innerHTML = `
+    <button class="pdp-back" onclick="showGallery()">← Back to catalog</button>
+    <div class="pdp-hero">
+      <div class="pdp-img">
+        ${img
+          ? `<img id="pdp-img-el" src="${he(img)}" alt="${he(design.name)}" onerror="this.parentNode.innerHTML='<div class=pdp-img-placeholder>${icon}</div>'">`
+          : `<div class="pdp-img-placeholder">${icon}</div>`}
+      </div>
+      <div class="pdp-meta">
+        <div class="pdp-name">${he(design.name||state.selectedBase)}</div>
+        <div class="pdp-sku" id="pdp-sku-el">${he(state.selectedSku)}</div>
+        <div class="pdp-price" id="pdp-price-el">${fmtPrice(v.price||design.price)}</div>
+        ${variantPills}
+        ${tags ? `<div class="pdp-tags">${tags}</div>` : ''}
+        <div class="pdp-features">
+          <span class="chip live"><span class="dot"></span>Similar Style</span>
+          <span class="chip live"><span class="dot"></span>Pairs With</span>
+          <span class="chip live"><span class="dot"></span>Complete the Look</span>
+          ${hasSS ? '<span class="chip ss-chip"><span class="dot"></span>Searchspring data</span>' : ''}
+          <span class="chip soon"><span class="dot"></span>Personalized ranking (server)</span>
+        </div>
+      </div>
     </div>
-    <div class="detail-meta">
-      <div class="detail-name">${design.name||selectedBase}</div>
-      <div class="detail-base-sku" id="detail-sku-el">${selectedSku}</div>
-      <div class="detail-price" id="detail-price-el">${fmtPrice(v.price||design.price)}</div>
-      ${swatches}
+    <div class="view-tabs">
+      <button class="view-tab${state.activeRecView==='ore'?' active':''}" onclick="setRecView('ore','${cat}')">BE·ORE Engine</button>
+      ${hasSS ? `<button class="view-tab ss-tab${state.activeRecView==='ss'?' active':''}" onclick="setRecView('ss','${cat}')">Searchspring</button>` : ''}
     </div>
-  </div>
-  ${tags?`<div class="tags-row">${tags}</div>`:''}
-  <div class="feature-strip">
-    <span class="chip live"><span class="dot"></span>Similar Style</span>
-    <span class="chip live"><span class="dot"></span>Pairs With</span>
-    <span class="chip live"><span class="dot"></span>Complete the Look</span>
-    ${hasSS?'<span class="chip ss"><span class="dot"></span>Searchspring comparison</span>':''}
-    <span class="chip soon"><span class="dot"></span>Personalized ranking (with server)</span>
-  </div>
-  <div class="view-tabs">
-    <button class="view-tab${activeView==='ore'?' active':''}" onclick="setView('ore')">BE·ORE Engine</button>
-    ${hasSS?`<button class="view-tab ss-tab${activeView==='ss'?' active':''}" onclick="setView('ss')">Searchspring</button>`:''}
-  </div>
-  <div id="recs-area">${buildRecsArea()}</div>`;
+    <div id="recs-area">${buildRecsArea(cat, recs)}</div>`;
 }
 
-function setView(v) {
-  activeView=v;
-  document.querySelectorAll('.view-tab').forEach(t=>{
-    const label=t.textContent.trim();
-    t.classList.toggle('active',(v==='ore'&&label==='BE·ORE Engine')||(v==='ss'&&label==='Searchspring'));
+function switchVariant(sku, cat) {
+  state.selectedSku = sku;
+  const design = loadedCats[cat]?.catalog[state.selectedBase];
+  const v = design?.variants?.find(vv => vv.sku === sku);
+  if (v) {
+    const imgEl = document.getElementById('pdp-img-el');
+    if (imgEl) { if (v.image) { imgEl.src = v.image; imgEl.style.display=''; } else imgEl.style.display='none'; }
+    const priceEl = document.getElementById('pdp-price-el');
+    if (priceEl && v.price) priceEl.textContent = fmtPrice(v.price);
+    const skuEl = document.getElementById('pdp-sku-el');
+    if (skuEl) skuEl.textContent = sku;
+  }
+  document.querySelectorAll('.v-pill').forEach(p => p.classList.toggle('active', p.dataset.sku === sku));
+  const ra = document.getElementById('recs-area');
+  if (ra) ra.innerHTML = buildRecsArea(cat, loadedCats[cat]?.recs || {});
+}
+
+function setRecView(v, cat) {
+  state.activeRecView = v;
+  document.querySelectorAll('.view-tab').forEach(t => {
+    const label = t.textContent.trim();
+    t.classList.toggle('active', (v==='ore'&&label==='BE·ORE Engine')||(v==='ss'&&label==='Searchspring'));
   });
-  document.getElementById('recs-area').innerHTML=buildRecsArea();
+  document.getElementById('recs-area').innerHTML = buildRecsArea(cat, loadedCats[cat]?.recs || {});
 }
 
-function buildRecsArea() {
-  if(activeView==='ss')return buildSSView();
-  return buildOREView();
+// ═══════════════════════════════════════════════════
+// Recs area
+// ═══════════════════════════════════════════════════
+function buildRecsArea(cat, recs) {
+  if (state.activeRecView === 'ss') return buildSSView();
+  return buildOREView(cat, recs);
 }
 
-// ════════════════════════════════════════════════════════════
-// ORE recs view
-// ════════════════════════════════════════════════════════════
-function buildOREView() {
-  const r=recs[selectedSku]||{};
-  const sim=r.similar_style||[];
-  const pw =r.pairs_with   ||[];
-  const cl =r.complete_look||{};
+function buildOREView(cat, recs) {
+  const r   = recs[state.selectedSku] || {};
+  let sim   = r.similar_style || [];
+  let pw    = r.pairs_with    || [];
+  const cl  = r.complete_look || {};
+
+  if (state.tailoredRecs && state.session.history.length >= 2) {
+    const interests = buildSessionInterests();
+    sim = tailorSort(sim, interests);
+    pw  = tailorSort(pw,  interests);
+  }
+
   return `
   <div class="rec-section">
     <div class="rec-section-header"><span class="rec-section-title">Similar Style</span><span class="chip live"><span class="dot"></span>Live</span></div>
-    ${sim.length?recGrid(sim,'similar_style',currentCat):'<div class="no-recs">No similar items found.</div>'}
+    ${sim.length ? recGrid(sim, 'similar_style', cat) : '<div class="no-recs">No similar items found.</div>'}
   </div>
   <div class="rec-section">
     <div class="rec-section-header"><span class="rec-section-title">Pairs With</span><span class="chip live"><span class="dot"></span>Live</span></div>
-    ${pw.length?recGrid(pw,'pairs_with',currentCat):'<div class="no-recs">No pairing suggestions.</div>'}
+    ${pw.length ? recGrid(pw, 'pairs_with', cat) : '<div class="no-recs">No pairing suggestions.</div>'}
   </div>
   <div class="rec-section">
     <div class="rec-section-header"><span class="rec-section-title">Complete the Look</span><span class="chip live"><span class="dot"></span>Live</span></div>
@@ -796,125 +921,288 @@ function buildOREView() {
   </div>`;
 }
 
-// ════════════════════════════════════════════════════════════
-// Searchspring view
-// ════════════════════════════════════════════════════════════
 function buildSSView() {
-  const ss=ssData?.[currentCat]?.[selectedBase];
-  if(!ss)return'<div class="no-ss">No Searchspring data for this product in the validation set.</div>';
-  const sim  =(ss.similar   ||[]).map(sku=>({sku,score:null,gate:null}));
-  const cross=(ss.cross_sell||[]).map(sku=>({sku,score:null,gate:null}));
+  const ss = ssData?.[state.currentCat === 'all' ? '' : state.currentCat]?.[state.selectedBase]
+    || Object.values(ssData || {}).reduce((found, catData) => found || catData[state.selectedBase], null);
+  if (!ss) return '<div class="no-ss">No Searchspring data for this product in the validation set.</div>';
+  const sim   = (ss.similar    || []).map(sku => ({sku, score:null, gate:null}));
+  const cross = (ss.cross_sell || []).map(sku => ({sku, score:null, gate:null}));
   return `
-  <div class="ss-note">Searchspring results for <strong>${selectedBase}</strong> (validation snapshot) — shown for side-by-side comparison with BE·ORE.</div>
+  <div class="ss-note">Searchspring results for <strong>${he(state.selectedBase)}</strong> (validation snapshot)</div>
   <div class="rec-section">
     <div class="rec-section-header"><span class="rec-section-title">Similar (Searchspring)</span></div>
-    ${sim.length?recGrid(sim,'similar_style',currentCat,true):'<div class="no-recs">No data.</div>'}
+    ${sim.length ? recGrid(sim, 'similar_style', state.currentCat, true) : '<div class="no-recs">No data.</div>'}
   </div>
   <div class="rec-section">
     <div class="rec-section-header"><span class="rec-section-title">Cross-sell (Searchspring)</span></div>
-    ${cross.length?recGrid(cross,'complete_look',null,true):'<div class="no-recs">No data.</div>'}
+    ${cross.length ? recGrid(cross, 'complete_look', null, true) : '<div class="no-recs">No data.</div>'}
   </div>`;
 }
 
-// ════════════════════════════════════════════════════════════
-// Rec card rendering
-// ════════════════════════════════════════════════════════════
 function recGrid(items, fn, cat, isSS=false) {
-  return `<div class="rec-grid">${items.map(r=>recCard(r,fn,cat,isSS)).join('')}</div>`;
+  return `<div class="rec-grid">${items.map(r => recCard(r, fn, cat, isSS)).join('')}</div>`;
 }
 
 function resolveRecMeta(sku) {
-  const base=sku.includes('-')?sku.slice(0,sku.lastIndexOf('-')):sku;
-  for(const[,data]of Object.entries(loadedCats)){
-    const design=data.catalog[base]||data.catalog[sku];
-    if(design){
-      const v=design.variants?.find(v=>v.sku===sku)||design.variants?.[0];
-      return{name:design.name,price:v?.price||design.price,image:v?.image||design.image,style:design.style,era:design.visual_era,motif:design.design_motif,cat:design.category};
+  const base = sku.includes('-') ? sku.slice(0, sku.lastIndexOf('-')) : sku;
+  for (const [, data] of Object.entries(loadedCats)) {
+    const design = data.catalog[base] || data.catalog[sku];
+    if (design) {
+      const v = design.variants?.find(vv => vv.sku === sku) || design.variants?.[0];
+      return { name: design.name, price: v?.price || design.price, image: v?.image || design.image, style: design.style, era: design.visual_era, motif: design.design_motif, cat: design.category };
     }
   }
-  return{};
+  return {};
 }
 
-let _cardIdx=0;
 function recCard(r, fn, preferCat, isSS=false) {
-  const meta   = resolveRecMeta(r.sku);
-  const icon   = ICONS[meta.cat||preferCat||currentCat]||'💎';
-  const gateOk = r.gate!==false;
-  const showGate=r.gate!==null&&r.gate!==undefined;
-  const pct    = r.score?Math.round(r.score*100):null;
-  const attrs  = [meta.style,meta.era,meta.motif].filter(Boolean).map(a=>`<span class="rec-attr">${fmtLabel(a)}</span>`).join('');
-  const cardId = `rc-${++_cardIdx}`;
-  const key    = voteKey(selectedSku, fn, r.sku);
-  const existingVote = votes[key];
-  const upActive  = existingVote?.vote==='up';
-  const downActive= existingVote?.vote==='down';
-  const existingNote = existingVote?.note||'';
-
-  const fbHtml = `
-    <div class="fb-row">
-      <button class="fb-btn up${upActive?' active':''}"
-        onclick="event.stopPropagation();submitVote('${selectedSku}','${fn}','${r.sku}','up','','${cardId}')">
-        👍 Good rec
-      </button>
-      <button class="fb-btn down${downActive?' active':''}"
-        onclick="event.stopPropagation();toggleNote('${cardId}','${selectedSku}','${fn}','${r.sku}')">
-        👎 Bad rec
-      </button>
-    </div>
-    <div class="fb-note-wrap" style="display:${downActive&&existingNote?'block':'none'}">
-      <textarea rows="2" placeholder="Why is this a bad rec? (optional)">${existingNote}</textarea>
-      <div class="fb-note-actions">
-        <button class="fb-cancel" onclick="event.stopPropagation();this.closest('.fb-note-wrap').style.display='none'">Cancel</button>
-        <button class="fb-submit" onclick="event.stopPropagation();submitNote('${cardId}','${selectedSku}','${fn}','${r.sku}')">Submit</button>
-      </div>
-    </div>`;
+  const meta    = resolveRecMeta(r.sku);
+  const icon    = ICONS[meta.cat || preferCat || 'rings'] || '💎';
+  const gateOk  = r.gate !== false;
+  const showG   = r.gate !== null && r.gate !== undefined;
+  const pct     = r.score ? Math.round(r.score * 100) : null;
+  const attrs   = [meta.style, meta.era, meta.motif].filter(Boolean).map(a => `<span class="rec-attr">${fmtLabel(a)}</span>`).join('');
+  const cardId  = `rc-${++_cardIdx}`;
+  const key     = voteKey(state.selectedSku, fn, r.sku);
+  const ev      = votes[key];
+  const upA     = ev?.vote === 'up';
+  const downA   = ev?.vote === 'down';
+  const enote   = ev?.note || '';
 
   return `<div class="rec-card${isSS?' ss-card':''}" id="${cardId}">
-    <div class="rec-card-inner" onclick="crossNav('${r.sku}')">
+    <div class="rec-card-inner" onclick="crossNav('${he(r.sku)}')">
       ${meta.image
-        ?`<img class="rec-card-img" src="${meta.image}" alt="" loading="lazy" onerror="this.style.display='none'">`
-        :`<div style="height:90px;display:flex;align-items:center;justify-content:center;font-size:28px;background:var(--surface2);border-radius:4px;margin-bottom:7px">${icon}</div>`}
-      <div class="rec-card-name">${meta.name||r.sku}</div>
-      <div class="rec-card-sku">${r.sku}</div>
-      ${meta.price?`<div class="rec-card-price">${fmtPrice(meta.price)}</div>`:''}
-      ${attrs?`<div class="rec-card-attrs">${attrs}</div>`:''}
-      ${pct!==null?`
+        ? `<img class="rec-card-img" src="${he(meta.image)}" alt="" loading="lazy" onerror="this.style.display='none'">`
+        : `<div style="height:90px;display:flex;align-items:center;justify-content:center;font-size:28px;background:var(--surface2);border-radius:4px;margin-bottom:7px">${icon}</div>`}
+      <div class="rec-card-name">${he(meta.name || r.sku)}</div>
+      <div class="rec-card-sku">${he(r.sku)}</div>
+      ${meta.price ? `<div class="rec-card-price">${fmtPrice(meta.price)}</div>` : ''}
+      ${attrs ? `<div class="rec-card-attrs">${attrs}</div>` : ''}
+      ${pct !== null ? `
       <div class="rec-score">
         <div class="rec-score-bar"><div class="rec-score-fill ${gateOk?'ok':'warn'}" style="width:${pct}%"></div></div>
         <div class="rec-score-num">${pct}%</div>
-        ${showGate?`<span class="gate-badge ${gateOk?'ok':'warn'}">${gateOk?'✓':'⚠'}</span>`:''}
-      </div>`:''}
+        ${showG ? `<span class="gate-badge ${gateOk?'ok':'warn'}">${gateOk?'✓':'⚠'}</span>` : ''}
+      </div>` : ''}
     </div>
-    ${fbHtml}
+    <div class="fb-row">
+      <button class="fb-btn up${upA?' active':''}" onclick="event.stopPropagation();submitVote('${he(state.selectedSku)}','${fn}','${he(r.sku)}','up','','${cardId}')">👍 Good rec</button>
+      <button class="fb-btn down${downA?' active':''}" onclick="event.stopPropagation();toggleNote('${cardId}')">👎 Bad rec</button>
+    </div>
+    <div class="fb-note-wrap" style="display:${downA&&enote?'block':'none'}">
+      <textarea rows="2" placeholder="Why is this a bad rec? (optional)">${he(enote)}</textarea>
+      <div class="fb-note-actions">
+        <button class="fb-cancel" onclick="event.stopPropagation();this.closest('.fb-note-wrap').style.display='none'">Cancel</button>
+        <button class="fb-submit" onclick="event.stopPropagation();submitNote('${cardId}','${he(state.selectedSku)}','${fn}','${he(r.sku)}')">Submit</button>
+      </div>
+    </div>
   </div>`;
 }
 
 function buildCrossLook(cl) {
-  const cats=Object.keys(cl).filter(c=>cl[c].length>0);
-  if(!cats.length)return'<div class="no-recs">No cross-category suggestions.</div>';
-  return cats.map(cat=>`
+  const cats = Object.keys(cl).filter(c => cl[c].length > 0);
+  if (!cats.length) return '<div class="no-recs">No cross-category suggestions.</div>';
+  return cats.map(cat => `
     <div class="rec-cross-cat">
       <div class="rec-cross-cat-label">${ICONS[cat]||''} ${fmtLabel(cat)}</div>
-      ${recGrid(cl[cat],'complete_look',cat)}
+      ${recGrid(cl[cat], 'complete_look', cat)}
     </div>`).join('');
 }
 
 async function crossNav(sku) {
-  const base=sku.includes('-')?sku.slice(0,sku.lastIndexOf('-')):sku;
-  let targetCat=currentCat;
-  for(const[cat,data]of Object.entries(loadedCats)){
-    if(data.catalog[base]||data.catalog[sku]){targetCat=cat;break;}
+  const base = sku.includes('-') ? sku.slice(0, sku.lastIndexOf('-')) : sku;
+  let targetCat = state.currentCat === 'all' ? null : state.currentCat;
+  for (const [cat, data] of Object.entries(loadedCats)) {
+    if (data.catalog[base] || data.catalog[sku]) { targetCat = cat; break; }
   }
-  if(targetCat!==currentCat)await selectCat(targetCat);
-  await selectProduct(base,sku);
-  document.getElementById('content').scrollTop=0;
+  if (!targetCat) {
+    const found = CATS.find(c => !loadedCats[c]);
+    if (found) await loadCat(found);
+    targetCat = CATS.find(c => loadedCats[c]?.catalog[base]);
+  }
+  if (!targetCat) return;
+  await openPDP(base, targetCat);
+  document.getElementById('pdp').scrollTop = 0;
 }
 
-// ════════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════
+// Session Intelligence
+// ═══════════════════════════════════════════════════
+function trackView(base, design, cat) {
+  const last = state.session.history[state.session.history.length - 1];
+  if (last && last.base === base) return;
+  state.session.history.push({
+    base, ts: Date.now(),
+    name: design.name || base,
+    price: design.price,
+    image: design.image || '',
+    category: cat,
+    tags: design.tags || [],
+    style: design.style,
+  });
+  state.session.events.push({type:'view', base, ts: Date.now()});
+  renderSessionSidebar();
+}
+
+function trendAttributes() {
+  const counts = {};
+  state.session.history.forEach(item => {
+    (item.tags || []).forEach(t => {
+      if (t && t !== 'unknown' && t !== 'none') counts[t] = (counts[t] || 0) + 1;
+    });
+    if (item.style) counts[item.style] = (counts[item.style] || 0) + 2;
+  });
+  const total = state.session.history.length || 1;
+  return Object.entries(counts)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 6)
+    .map(([key, n]) => ({key, pct: Math.round(n / total * 100)}));
+}
+
+function buildSessionInterests() {
+  const counts = {};
+  state.session.history.forEach(item => {
+    (item.tags || []).forEach(t => { if (t) counts[t] = (counts[t]||0)+1; });
+    if (item.style) counts[item.style] = (counts[item.style]||0)+2;
+  });
+  const total = state.session.history.length || 1;
+  const out = {};
+  Object.entries(counts).forEach(([k, n]) => { out[k] = n / total; });
+  return out;
+}
+
+function tailorSort(recs, interests) {
+  if (!Object.keys(interests).length) return recs;
+  return [...recs].sort((a, b) => {
+    const scoreA = tailorScore(a.sku, interests);
+    const scoreB = tailorScore(b.sku, interests);
+    return (scoreB + b.score * 0.5) - (scoreA + a.score * 0.5);
+  });
+}
+
+function tailorScore(sku, interests) {
+  const base = sku.includes('-') ? sku.slice(0, sku.lastIndexOf('-')) : sku;
+  let meta = null;
+  for (const [, data] of Object.entries(loadedCats)) {
+    meta = data.catalog[base]; if (meta) break;
+  }
+  if (!meta) return 0;
+  let s = 0;
+  (meta.tags || []).forEach(t => { if (interests[t]) s += interests[t]; });
+  if (meta.style && interests[meta.style]) s += interests[meta.style];
+  return s;
+}
+
+function renderSessionSidebar() {
+  const hist = state.session.history;
+  const listEl = document.getElementById('session-history-list');
+  const emptyEl = document.getElementById('session-empty');
+
+  if (!hist.length) {
+    emptyEl.style.display = '';
+    listEl.innerHTML = '';
+    document.getElementById('trend-panel').style.display = 'none';
+    return;
+  }
+  emptyEl.style.display = 'none';
+  listEl.innerHTML = [...hist].reverse().slice(0, 10).map(item => `
+    <div class="sess-item" onclick="openPDP('${he(item.base)}','${he(item.category)}')">
+      ${item.image
+        ? `<img class="sess-thumb" src="${he(item.image)}" onerror="this.style.display='none'" loading="lazy">`
+        : `<div class="sess-thumb-placeholder">${ICONS[item.category]||'💎'}</div>`}
+      <div class="sess-info">
+        <div class="sess-name">${he((item.name||'').slice(0,36))}</div>
+        <div class="sess-price">${fmtPrice(item.price)}</div>
+      </div>
+      <span class="sess-badge">${he(item.category)}</span>
+    </div>`).join('');
+
+  const trends = trendAttributes();
+  const trendPanel = document.getElementById('trend-panel');
+  if (trends.length) {
+    trendPanel.style.display = '';
+    document.getElementById('trend-rows').innerHTML = trends.map(t => `
+      <div class="trend-row">
+        <span class="trend-label">${he(fmtLabel(t.key))}</span>
+        <div class="trend-bar-wrap"><div class="trend-bar" style="width:${t.pct}%"></div></div>
+      </div>`).join('');
+  } else {
+    trendPanel.style.display = 'none';
+  }
+
+  // Update tailor note
+  const noteEl = document.getElementById('tailor-note');
+  if (state.tailoredRecs && hist.length) {
+    noteEl.textContent = `Influencing from ${hist.length} view${hist.length !== 1 ? 's' : ''}`;
+  } else if (state.tailoredRecs) {
+    noteEl.textContent = 'Browse more to build context';
+  }
+}
+
+function onTailoredToggle(on) {
+  state.tailoredRecs = on;
+  const toggle = document.getElementById('tailor-toggle');
+  const status = document.getElementById('tailor-status');
+  toggle.classList.toggle('on', on);
+  status.textContent = on ? 'On' : 'Off';
+  status.className = 'tailor-status ' + (on ? 'on' : 'off');
+  const hist = state.session.history.length;
+  document.getElementById('tailor-note').textContent =
+    on && hist ? `Influencing from ${hist} view${hist !== 1 ? 's' : ''}` :
+    on ? 'Browse more to build context' : '';
+  if (state.view === 'pdp' && state.selectedBase) {
+    const cat = CATS.find(c => loadedCats[c]?.catalog[state.selectedBase]);
+    if (cat) renderPDP(cat);
+  }
+}
+
+function exportSession() {
+  const data = {
+    exported_at: new Date().toISOString(),
+    session: state.session,
+    trend_attributes: trendAttributes(),
+    note: 'Commit to output/v2/session_logs/ for training signal.',
+  };
+  const blob = new Blob([JSON.stringify(data, null, 2)], {type:'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `session_log_${Date.now()}.json`;
+  a.click();
+}
+
+function showStyleProfile() {
+  const trends = trendAttributes();
+  const modal = document.getElementById('style-modal');
+  const desc  = document.getElementById('style-modal-desc');
+  const traits= document.getElementById('style-traits');
+  if (!trends.length) {
+    desc.textContent = 'Browse a few products to generate your style profile.';
+    traits.innerHTML = '';
+  } else {
+    desc.textContent = `Based on ${state.session.history.length} product${state.session.history.length !== 1 ? 's' : ''} you've viewed this session.`;
+    traits.innerHTML = trends.map(t => `
+      <div class="style-trait-row">
+        <span class="style-trait-label">${he(fmtLabel(t.key))}</span>
+        <div class="style-trait-bar-wrap"><div class="style-trait-bar" style="width:${t.pct}%"></div></div>
+        <span class="style-trait-pct">${t.pct}%</span>
+      </div>`).join('');
+  }
+  modal.classList.add('open');
+}
+
+// Close modals on overlay click
+document.querySelectorAll('.modal-overlay').forEach(overlay => {
+  overlay.addEventListener('click', e => { if (e.target === overlay) overlay.classList.remove('open'); });
+});
+
+// ═══════════════════════════════════════════════════
 // Init
-// ════════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════
 updateFbBadge();
 selectCat('rings');
+// Pre-select rings pill since we start there
+document.querySelector('.cat-pill[data-cat="rings"]').classList.add('active');
+document.querySelector('.cat-pill[data-cat="all"]').classList.remove('active');
 </script>
 </body>
 </html>
