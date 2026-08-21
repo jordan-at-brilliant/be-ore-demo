@@ -5,115 +5,84 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>BE·ORE Recommendation Engine</title>
 <style>
-/* ── Tokens ─────────────────────────────────────────────── */
 :root {
-  --bg:        #F9F7F4;
-  --surface:   #FFFFFF;
-  --surface2:  #F2EFE9;
-  --border:    #E0DBD2;
-  --text:      #1A1814;
-  --text-mid:  #5A5650;
-  --text-dim:  #9A9590;
-  --gold:      #B89858;
-  --gold-light:#F4EDD8;
-  --navy:      #1B2340;
-  --tag-bg:    #EDEBE5;
-  --tag-text:  #5A5650;
-  --gate-ok:   #2D6A4F;
-  --gate-ok-bg:#EEF6EE;
-  --gate-warn: #9A6A1A;
-  --gate-warn-bg:#FFF8EC;
-  --ss-color:  #5865F2;
-  --ss-bg:     #EEF0FD;
-  --chip-soon-bg:   #FFF8EC;
-  --chip-soon-text: #9A6A1A;
-  --chip-live-bg:   #EEF6EE;
-  --chip-live-text: #2D6A4F;
-  --shadow:    0 1px 4px rgba(0,0,0,.07);
-  --shadow-md: 0 4px 16px rgba(0,0,0,.10);
-  --radius:    8px;
+  --bg:#F9F7F4;--surface:#FFFFFF;--surface2:#F2EFE9;--border:#E0DBD2;
+  --text:#1A1814;--text-mid:#5A5650;--text-dim:#9A9590;
+  --gold:#B89858;--gold-light:#F4EDD8;--navy:#1B2340;
+  --tag-bg:#EDEBE5;--tag-text:#5A5650;
+  --ok:#2D6A4F;--ok-bg:#EEF6EE;--warn:#9A6A1A;--warn-bg:#FFF8EC;
+  --up:#2D6A4F;--up-bg:#EEF6EE;--down:#C0392B;--down-bg:#FEF0EE;
+  --ss:#5865F2;--ss-bg:#EEF0FD;
+  --soon-bg:#FFF8EC;--soon-text:#9A6A1A;--live-bg:#EEF6EE;--live-text:#2D6A4F;
+  --shadow:0 1px 4px rgba(0,0,0,.07);--shadow-md:0 4px 16px rgba(0,0,0,.10);
+  --radius:8px;
 }
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    --bg:        #141210;
-    --surface:   #1E1C1A;
-    --surface2:  #252220;
-    --border:    #352F28;
-    --text:      #EDE8E0;
-    --text-mid:  #B8B0A4;
-    --text-dim:  #6A6460;
-    --gold:      #C8A858;
-    --gold-light:#2E2418;
-    --navy:      #0E1220;
-    --tag-bg:    #28241E;
-    --tag-text:  #9A9086;
-    --gate-ok:   #5AB888;
-    --gate-ok-bg:#10201A;
-    --gate-warn: #C8901A;
-    --gate-warn-bg:#2A2010;
-    --ss-color:  #8A94F8;
-    --ss-bg:     #1A1C38;
-    --chip-soon-bg:   #2A2010;
-    --chip-soon-text: #C8901A;
-    --chip-live-bg:   #10201A;
-    --chip-live-text: #5AB888;
-    --shadow:    0 1px 4px rgba(0,0,0,.3);
-    --shadow-md: 0 4px 16px rgba(0,0,0,.4);
-  }
-}
-:root[data-theme="dark"] {
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){
   --bg:#141210;--surface:#1E1C1A;--surface2:#252220;--border:#352F28;
-  --text:#EDE8E0;--text-mid:#B8B0A4;--text-dim:#6A6460;--gold:#C8A858;
-  --gold-light:#2E2418;--navy:#0E1220;--tag-bg:#28241E;--tag-text:#9A9086;
-  --gate-ok:#5AB888;--gate-ok-bg:#10201A;--gate-warn:#C8901A;--gate-warn-bg:#2A2010;
-  --ss-color:#8A94F8;--ss-bg:#1A1C38;
-  --chip-soon-bg:#2A2010;--chip-soon-text:#C8901A;--chip-live-bg:#10201A;--chip-live-text:#5AB888;
+  --text:#EDE8E0;--text-mid:#B8B0A4;--text-dim:#6A6460;
+  --gold:#C8A858;--gold-light:#2E2418;--navy:#0E1220;
+  --tag-bg:#28241E;--tag-text:#9A9086;
+  --ok:#5AB888;--ok-bg:#10201A;--warn:#C8901A;--warn-bg:#2A2010;
+  --up:#5AB888;--up-bg:#10201A;--down:#E57368;--down-bg:#2A1210;
+  --ss:#8A94F8;--ss-bg:#1A1C38;
+  --soon-bg:#2A2010;--soon-text:#C8901A;--live-bg:#10201A;--live-text:#5AB888;
+  --shadow:0 1px 4px rgba(0,0,0,.3);--shadow-md:0 4px 16px rgba(0,0,0,.4);
+}}
+:root[data-theme="dark"]{
+  --bg:#141210;--surface:#1E1C1A;--surface2:#252220;--border:#352F28;
+  --text:#EDE8E0;--text-mid:#B8B0A4;--text-dim:#6A6460;
+  --gold:#C8A858;--gold-light:#2E2418;--navy:#0E1220;
+  --tag-bg:#28241E;--tag-text:#9A9086;
+  --ok:#5AB888;--ok-bg:#10201A;--warn:#C8901A;--warn-bg:#2A2010;
+  --up:#5AB888;--up-bg:#10201A;--down:#E57368;--down-bg:#2A1210;
+  --ss:#8A94F8;--ss-bg:#1A1C38;
+  --soon-bg:#2A2010;--soon-text:#C8901A;--live-bg:#10201A;--live-text:#5AB888;
   --shadow:0 1px 4px rgba(0,0,0,.3);--shadow-md:0 4px 16px rgba(0,0,0,.4);
 }
 
-/* ── Reset ──────────────────────────────────────────────── */
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 html,body{height:100%;font-family:system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.5;}
 button{font:inherit;cursor:pointer;}
+textarea{font:inherit;}
 
-/* ── App shell ──────────────────────────────────────────── */
+/* ── App shell ── */
 #app{display:grid;grid-template-rows:52px auto 1fr;height:100vh;overflow:hidden;}
 #main-area{display:flex;overflow:hidden;}
 #sidebar{width:300px;display:flex;flex-direction:column;border-right:1px solid var(--border);background:var(--surface);flex-shrink:0;}
 #content{flex:1;overflow-y:auto;background:var(--bg);padding:24px;}
 
-/* ── Header ─────────────────────────────────────────────── */
-#header{background:var(--navy);display:flex;align-items:center;gap:12px;padding:0 18px;border-bottom:2px solid var(--gold);}
+/* ── Header ── */
+#header{background:var(--navy);display:flex;align-items:center;gap:10px;padding:0 16px;border-bottom:2px solid var(--gold);}
 #header h1{font-size:14px;font-weight:700;color:#fff;letter-spacing:.06em;}
-.badge{font-size:10px;background:var(--gold);color:#fff;padding:2px 8px;border-radius:20px;letter-spacing:.06em;font-weight:700;}
+.badge{font-size:10px;background:var(--gold);color:#fff;padding:2px 8px;border-radius:20px;font-weight:700;}
 #header .spacer{flex:1;}
-.theme-btn{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);color:#fff;font-size:11px;padding:4px 10px;border-radius:20px;transition:background .15s;}
-.theme-btn:hover{background:rgba(255,255,255,.2);}
+.hdr-btn{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);color:#fff;font-size:11px;padding:4px 10px;border-radius:20px;transition:background .15s;}
+.hdr-btn:hover{background:rgba(255,255,255,.22);}
+#fb-badge{display:none;background:#C0392B;color:#fff;font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px;cursor:pointer;}
+#fb-badge.show{display:inline-flex;align-items:center;gap:4px;}
 
-/* ── Stats bar ──────────────────────────────────────────── */
-#stats-bar{background:var(--surface2);border-bottom:1px solid var(--border);font-size:11px;color:var(--text-dim);padding:4px 18px;display:flex;gap:16px;align-items:center;flex-wrap:wrap;}
+/* ── Stats bar ── */
+#stats-bar{background:var(--surface2);border-bottom:1px solid var(--border);font-size:11px;color:var(--text-dim);padding:4px 16px;display:flex;gap:14px;align-items:center;flex-wrap:wrap;}
 #stats-bar strong{color:var(--text);}
 .chip{display:inline-flex;align-items:center;gap:4px;font-size:10px;padding:2px 8px;border-radius:20px;font-weight:600;}
 .chip .dot{width:5px;height:5px;border-radius:50%;background:currentColor;flex-shrink:0;}
-.chip.live{background:var(--chip-live-bg);color:var(--chip-live-text);}
-.chip.soon{background:var(--chip-soon-bg);color:var(--chip-soon-text);}
-.chip.ss{background:var(--ss-bg);color:var(--ss-color);}
+.chip.live{background:var(--live-bg);color:var(--live-text);}
+.chip.soon{background:var(--soon-bg);color:var(--soon-text);}
+.chip.ss{background:var(--ss-bg);color:var(--ss);}
 
-/* ── Category tabs ──────────────────────────────────────── */
+/* ── Sidebar ── */
 #cat-tabs{display:flex;border-bottom:1px solid var(--border);background:var(--surface2);}
-.cat-tab{flex:1;padding:9px 4px;text-align:center;font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--text-dim);cursor:pointer;border-bottom:2px solid transparent;transition:all .15s;background:none;border-top:none;border-left:none;border-right:none;}
+.cat-tab{flex:1;padding:9px 4px;text-align:center;font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--text-dim);cursor:pointer;border-bottom:2px solid transparent;border-top:none;border-left:none;border-right:none;background:none;transition:all .15s;}
 .cat-tab:hover{color:var(--text);}
 .cat-tab.active{color:var(--gold);border-bottom-color:var(--gold);background:var(--surface);}
 
-/* ── Search / filter ─────────────────────────────────────── */
 #search-wrap{padding:9px 10px;border-bottom:1px solid var(--border);}
 #search{width:100%;padding:6px 10px;border:1px solid var(--border);border-radius:var(--radius);background:var(--surface2);color:var(--text);font-size:13px;outline:none;}
 #search:focus{border-color:var(--gold);}
-#filter-row{display:flex;gap:5px;margin-top:6px;flex-wrap:wrap;}
-.filter-select{flex:1;min-width:85px;padding:4px 6px;border:1px solid var(--border);border-radius:var(--radius);background:var(--surface2);color:var(--text);font-size:11px;outline:none;}
+#filter-row{display:flex;gap:5px;margin-top:6px;}
+.filter-select{flex:1;padding:4px 6px;border:1px solid var(--border);border-radius:var(--radius);background:var(--surface2);color:var(--text);font-size:11px;outline:none;}
 .filter-select:focus{border-color:var(--gold);}
 
-/* ── Product list ───────────────────────────────────────── */
 #product-count{font-size:11px;color:var(--text-dim);padding:5px 10px 3px;}
 #product-list-wrap{flex:1;overflow-y:auto;}
 #load-more-wrap{padding:8px 10px;text-align:center;}
@@ -129,21 +98,18 @@ button{font:inherit;cursor:pointer;}
 .p-name{font-size:12px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .p-sku{font-size:10px;color:var(--text-dim);font-family:monospace;}
 .p-meta{font-size:11px;color:var(--text-mid);}
-.p-variant-count{font-size:10px;color:var(--text-dim);margin-top:1px;}
+.p-vc{font-size:10px;color:var(--text-dim);}
 
-/* ── Loading ─────────────────────────────────────────────── */
+/* ── Loading / empty ── */
 .loading-state{display:flex;flex-direction:column;align-items:center;justify-content:center;height:200px;gap:10px;color:var(--text-dim);}
 .spinner{width:22px;height:22px;border:2px solid var(--border);border-top-color:var(--gold);border-radius:50%;animation:spin .7s linear infinite;}
 @keyframes spin{to{transform:rotate(360deg);}}
-
-/* ── Empty state ─────────────────────────────────────────── */
 #empty-state{display:flex;flex-direction:column;align-items:center;justify-content:center;height:60vh;gap:14px;text-align:center;}
 #empty-state .icon{font-size:44px;}
 #empty-state p{color:var(--text-dim);max-width:280px;line-height:1.6;font-size:13px;}
 
-/* ── Detail panel ───────────────────────────────────────── */
-#product-detail{max-width:900px;}
-
+/* ── Detail ── */
+#product-detail{max-width:920px;}
 .detail-header{display:flex;gap:16px;margin-bottom:20px;}
 .detail-img{width:120px;height:120px;border-radius:12px;background:var(--surface);border:1px solid var(--border);overflow:hidden;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:36px;box-shadow:var(--shadow);}
 .detail-img img{width:100%;height:100%;object-fit:cover;}
@@ -152,68 +118,106 @@ button{font:inherit;cursor:pointer;}
 .detail-base-sku{font-family:monospace;font-size:11px;color:var(--text-dim);margin-bottom:8px;}
 .detail-price{font-size:16px;font-weight:700;color:var(--gold);margin-bottom:10px;}
 
-/* ── Variant swatches ───────────────────────────────────── */
-.variants-row{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:16px;align-items:center;}
+.variants-row{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px;align-items:center;}
 .variants-label{font-size:11px;color:var(--text-dim);font-weight:600;text-transform:uppercase;letter-spacing:.05em;margin-right:4px;}
-.swatch{display:flex;align-items:center;gap:5px;padding:4px 10px 4px 6px;border:2px solid var(--border);border-radius:20px;cursor:pointer;transition:all .15s;background:var(--surface);font-size:11px;font-weight:500;color:var(--text-mid);}
-.swatch:hover{border-color:var(--gold);color:var(--text);}
+.swatch{display:flex;align-items:center;gap:5px;padding:4px 10px 4px 6px;border:2px solid var(--border);border-radius:20px;cursor:pointer;background:var(--surface);font-size:11px;font-weight:500;color:var(--text-mid);transition:all .15s;}
+.swatch:hover{border-color:var(--gold);}
 .swatch.active{border-color:var(--gold);background:var(--gold-light);color:var(--text);}
 .swatch-dot{width:14px;height:14px;border-radius:50%;border:1px solid rgba(0,0,0,.12);flex-shrink:0;}
 
-/* ── Tags ───────────────────────────────────────────────── */
 .tags-row{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:18px;}
 .tag{font-size:11px;padding:2px 8px;border-radius:20px;background:var(--tag-bg);color:var(--tag-text);border:1px solid var(--border);}
 .tag.hi{background:var(--gold-light);color:var(--gold);border-color:var(--gold);}
-
-/* ── Feature strip ──────────────────────────────────────── */
 .feature-strip{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:22px;}
 
-/* ── Rec view tabs ──────────────────────────────────────── */
-.view-tabs{display:flex;border-bottom:1px solid var(--border);margin-bottom:20px;gap:0;}
-.view-tab{padding:8px 16px;font-size:12px;font-weight:600;color:var(--text-dim);cursor:pointer;border-bottom:2px solid transparent;transition:all .15s;background:none;border-top:none;border-left:none;border-right:none;}
+.view-tabs{display:flex;border-bottom:1px solid var(--border);margin-bottom:20px;}
+.view-tab{padding:8px 16px;font-size:12px;font-weight:600;color:var(--text-dim);cursor:pointer;border-bottom:2px solid transparent;border-top:none;border-left:none;border-right:none;background:none;transition:all .15s;}
 .view-tab:hover{color:var(--text);}
 .view-tab.active{color:var(--gold);border-bottom-color:var(--gold);}
-.view-tab.ss-tab.active{color:var(--ss-color);border-bottom-color:var(--ss-color);}
+.view-tab.ss-tab.active{color:var(--ss);border-bottom-color:var(--ss);}
 
-/* ── Rec sections ───────────────────────────────────────── */
 .rec-section{margin-bottom:28px;}
 .rec-section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;padding-bottom:7px;border-bottom:1px solid var(--border);}
 .rec-section-title{font-size:12px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--text-mid);}
+.rec-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(155px,1fr));gap:10px;}
 
-.rec-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(148px,1fr));gap:9px;}
-
-.rec-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:10px;cursor:pointer;transition:all .15s;box-shadow:var(--shadow);}
+/* ── Rec card ── */
+.rec-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:10px;transition:box-shadow .15s,border-color .15s,transform .15s;box-shadow:var(--shadow);position:relative;}
 .rec-card:hover{border-color:var(--gold);box-shadow:var(--shadow-md);transform:translateY(-1px);}
-.rec-card.ss-card:hover{border-color:var(--ss-color);}
-.rec-card-img{width:100%;height:88px;object-fit:cover;border-radius:4px;background:var(--surface2);display:block;margin-bottom:7px;}
+.rec-card.ss-card:hover{border-color:var(--ss);}
+.rec-card-inner{cursor:pointer;}
+.rec-card-img{width:100%;height:90px;object-fit:cover;border-radius:4px;background:var(--surface2);display:block;margin-bottom:7px;}
 .rec-card-name{font-size:11px;font-weight:500;line-height:1.3;margin-bottom:3px;color:var(--text);}
 .rec-card-sku{font-size:10px;color:var(--text-dim);font-family:monospace;margin-bottom:3px;}
-.rec-card-price{font-size:11px;font-weight:700;color:var(--gold);margin-bottom:5px;}
-.rec-card-attrs{display:flex;flex-wrap:wrap;gap:3px;margin-bottom:5px;}
+.rec-card-price{font-size:11px;font-weight:700;color:var(--gold);margin-bottom:4px;}
+.rec-card-attrs{display:flex;flex-wrap:wrap;gap:3px;margin-bottom:4px;}
 .rec-attr{font-size:9px;padding:1px 5px;border-radius:10px;background:var(--tag-bg);color:var(--tag-text);}
-
-/* Score bar */
-.rec-score{display:flex;align-items:center;gap:4px;margin-top:5px;}
+.rec-score{display:flex;align-items:center;gap:4px;}
 .rec-score-bar{flex:1;height:3px;background:var(--border);border-radius:2px;overflow:hidden;}
 .rec-score-fill{height:100%;border-radius:2px;}
-.rec-score-fill.gate-ok{background:var(--gate-ok);}
-.rec-score-fill.gate-warn{background:var(--gate-warn);}
-.rec-score-num{font-size:10px;color:var(--text-dim);font-variant-numeric:tabular-nums;min-width:28px;text-align:right;}
+.rec-score-fill.ok{background:var(--ok);}
+.rec-score-fill.warn{background:var(--warn);}
+.rec-score-num{font-size:10px;color:var(--text-dim);font-variant-numeric:tabular-nums;min-width:26px;text-align:right;}
+.gate-badge{font-size:9px;font-weight:700;padding:1px 5px;border-radius:10px;}
+.gate-badge.ok{background:var(--ok-bg);color:var(--ok);}
+.gate-badge.warn{background:var(--warn-bg);color:var(--warn);}
 
-/* Gate badge */
-.gate-badge{font-size:9px;font-weight:700;padding:1px 5px;border-radius:10px;letter-spacing:.03em;}
-.gate-badge.ok{background:var(--gate-ok-bg);color:var(--gate-ok);}
-.gate-badge.warn{background:var(--gate-warn-bg);color:var(--gate-warn);}
+/* ── Feedback row ── */
+.fb-row{display:flex;gap:5px;margin-top:8px;padding-top:7px;border-top:1px solid var(--border);}
+.fb-btn{flex:1;display:flex;align-items:center;justify-content:center;gap:3px;padding:4px 0;border:1px solid var(--border);border-radius:6px;background:none;font-size:11px;color:var(--text-dim);transition:all .15s;}
+.fb-btn:hover{border-color:currentColor;}
+.fb-btn.up:hover,.fb-btn.up.active{border-color:var(--up);color:var(--up);background:var(--up-bg);}
+.fb-btn.down:hover,.fb-btn.down.active{border-color:var(--down);color:var(--down);background:var(--down-bg);}
+.fb-btn.synced{opacity:.5;cursor:default;}
+.fb-note-wrap{margin-top:6px;}
+.fb-note-wrap textarea{width:100%;padding:5px 7px;border:1px solid var(--border);border-radius:5px;background:var(--surface2);color:var(--text);font-size:11px;resize:none;outline:none;line-height:1.4;}
+.fb-note-wrap textarea:focus{border-color:var(--gold);}
+.fb-note-actions{display:flex;gap:5px;margin-top:4px;}
+.fb-submit{flex:1;padding:4px;border:none;border-radius:5px;background:var(--gold);color:#fff;font-size:11px;font-weight:600;}
+.fb-cancel{padding:4px 8px;border:1px solid var(--border);border-radius:5px;background:none;color:var(--text-dim);font-size:11px;}
 
 .no-recs{color:var(--text-dim);font-size:12px;padding:14px;background:var(--surface2);border-radius:var(--radius);text-align:center;}
-
-/* ── Cross-category look ─────────────────────────────────── */
 .rec-cross-cat{margin-bottom:14px;}
 .rec-cross-cat-label{font-size:10px;font-weight:700;color:var(--text-dim);text-transform:uppercase;letter-spacing:.06em;margin-bottom:7px;}
-
-/* ── SS comparison note ─────────────────────────────────── */
 .ss-note{font-size:11px;color:var(--text-dim);background:var(--ss-bg);border:1px solid rgba(88,101,242,.2);border-radius:var(--radius);padding:8px 12px;margin-bottom:14px;line-height:1.6;}
-.no-ss{color:var(--text-dim);font-size:12px;padding:32px 16px;text-align:center;background:var(--surface2);border-radius:var(--radius);}
+.no-ss{color:var(--text-dim);font-size:12px;padding:32px;text-align:center;background:var(--surface2);border-radius:var(--radius);}
+
+/* ── Toast ── */
+#toast{position:fixed;bottom:20px;right:20px;background:var(--navy);color:#fff;font-size:12px;padding:9px 14px;border-radius:var(--radius);box-shadow:var(--shadow-md);transform:translateY(60px);opacity:0;transition:all .25s;z-index:200;max-width:300px;}
+#toast.show{transform:translateY(0);opacity:1;}
+#toast.err{background:#C0392B;}
+
+/* ── Modal overlay ── */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:300;align-items:center;justify-content:center;}
+.modal-overlay.open{display:flex;}
+.modal{background:var(--surface);border-radius:12px;padding:24px;width:440px;max-width:92vw;box-shadow:var(--shadow-md);}
+.modal h2{font-size:15px;font-weight:700;margin-bottom:6px;}
+.modal p{font-size:12px;color:var(--text-dim);line-height:1.6;margin-bottom:14px;}
+.modal label{display:block;font-size:11px;font-weight:600;color:var(--text-mid);margin-bottom:4px;margin-top:12px;}
+.modal input,.modal textarea{width:100%;padding:7px 10px;border:1px solid var(--border);border-radius:6px;background:var(--surface2);color:var(--text);font-size:13px;outline:none;}
+.modal input:focus{border-color:var(--gold);}
+.modal-actions{display:flex;gap:8px;margin-top:18px;justify-content:flex-end;}
+.btn-primary{padding:7px 18px;border:none;border-radius:6px;background:var(--gold);color:#fff;font-size:13px;font-weight:600;}
+.btn-ghost{padding:7px 14px;border:1px solid var(--border);border-radius:6px;background:none;color:var(--text-mid);font-size:13px;}
+.modal-note{font-size:10px;color:var(--text-dim);margin-top:8px;line-height:1.5;}
+.modal-note a{color:var(--gold);}
+
+/* ── Feedback queue panel ── */
+#fb-panel{display:none;position:fixed;bottom:16px;right:16px;width:320px;background:var(--surface);border:1px solid var(--border);border-radius:12px;box-shadow:var(--shadow-md);z-index:150;padding:14px;}
+#fb-panel.open{display:block;}
+#fb-panel h3{font-size:13px;font-weight:700;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between;}
+.fb-queue-item{font-size:11px;color:var(--text-mid);padding:5px 0;border-bottom:1px solid var(--border);display:flex;gap:8px;align-items:center;}
+.fb-queue-item:last-child{border-bottom:none;}
+.fqi-vote{font-size:14px;}
+.fqi-info{flex:1;min-width:0;}
+.fqi-skus{font-family:monospace;font-size:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.fqi-status{font-size:10px;padding:1px 6px;border-radius:10px;}
+.fqi-status.synced{background:var(--ok-bg);color:var(--ok);}
+.fqi-status.pending{background:var(--warn-bg);color:var(--warn);}
+.fb-panel-actions{display:flex;gap:6px;margin-top:10px;}
+.fb-panel-btn{flex:1;padding:6px;border:1px solid var(--border);border-radius:6px;background:var(--surface2);color:var(--text-mid);font-size:11px;}
+.fb-panel-btn:hover{border-color:var(--gold);color:var(--gold);}
+.fb-panel-close{background:none;border:none;color:var(--text-dim);font-size:16px;line-height:1;padding:0;}
 </style>
 </head>
 <body>
@@ -222,37 +226,39 @@ button{font:inherit;cursor:pointer;}
   <div id="header">
     <h1>BE·ORE</h1>
     <span class="badge">DEMO</span>
-    <span style="font-size:11px;color:rgba(255,255,255,.45)">Recommendation Engine · Static Preview</span>
+    <span style="font-size:11px;color:rgba(255,255,255,.4)">Recommendation Engine</span>
     <span class="spacer"></span>
-    <button class="theme-btn" onclick="toggleTheme()">Toggle theme</button>
+    <span id="fb-badge" onclick="toggleFbPanel()">💬 <span id="fb-count">0</span> votes</span>
+    <button class="hdr-btn" onclick="openSetup()">⚙ Feedback setup</button>
+    <button class="hdr-btn" onclick="toggleTheme()">Toggle theme</button>
   </div>
 
   <div id="stats-bar">
     <span>Catalog: <strong id="stat-total">—</strong> designs</span>
-    <span>Engine: <strong>Embedding similarity + EvalGate + Business rules</strong></span>
+    <span>Engine: <strong>Embeddings + EvalGate + Rules</strong></span>
     <span style="margin-left:auto;display:flex;gap:5px;flex-wrap:wrap">
       <span class="chip live"><span class="dot"></span>Browse &amp; search</span>
       <span class="chip live"><span class="dot"></span>Variant swatches</span>
       <span class="chip live"><span class="dot"></span>Similarity recs</span>
+      <span class="chip live"><span class="dot"></span>Rec feedback</span>
       <span class="chip ss"><span class="dot"></span>Searchspring comparison</span>
-      <span class="chip soon"><span class="dot"></span>Auth / Feedback (with server)</span>
+      <span class="chip soon"><span class="dot"></span>Personalized ranking (with server)</span>
     </span>
   </div>
 
   <div id="main-area">
-    <!-- Sidebar -->
     <div id="sidebar">
       <div id="cat-tabs">
-        <button class="cat-tab active" data-cat="rings"    onclick="selectCat('rings')">Rings</button>
-        <button class="cat-tab"        data-cat="earrings" onclick="selectCat('earrings')">Earrings</button>
-        <button class="cat-tab"        data-cat="bracelets"onclick="selectCat('bracelets')">Bracelets</button>
-        <button class="cat-tab"        data-cat="pendants" onclick="selectCat('pendants')">Pendants</button>
+        <button class="cat-tab active" data-cat="rings"     onclick="selectCat('rings')">Rings</button>
+        <button class="cat-tab"        data-cat="earrings"  onclick="selectCat('earrings')">Earrings</button>
+        <button class="cat-tab"        data-cat="bracelets" onclick="selectCat('bracelets')">Bracelets</button>
+        <button class="cat-tab"        data-cat="pendants"  onclick="selectCat('pendants')">Pendants</button>
       </div>
       <div id="search-wrap">
         <input id="search" type="search" placeholder="Search by name or SKU…" oninput="applyFilters()">
         <div id="filter-row">
-          <select class="filter-select" id="filter-style"  onchange="applyFilters()"><option value="">All styles</option></select>
-          <select class="filter-select" id="filter-price"  onchange="applyFilters()">
+          <select class="filter-select" id="filter-style" onchange="applyFilters()"><option value="">All styles</option></select>
+          <select class="filter-select" id="filter-price" onchange="applyFilters()">
             <option value="">Any price</option>
             <option value="0-1000">Under $1K</option>
             <option value="1000-3000">$1K–$3K</option>
@@ -263,61 +269,324 @@ button{font:inherit;cursor:pointer;}
       </div>
       <div id="product-count"></div>
       <div id="product-list-wrap">
-        <div id="product-list">
-          <div class="loading-state"><div class="spinner"></div><span>Loading…</span></div>
-        </div>
-        <div id="load-more-wrap" style="display:none">
-          <button id="load-more" onclick="loadMore()">Load more</button>
-        </div>
+        <div id="product-list"><div class="loading-state"><div class="spinner"></div><span>Loading…</span></div></div>
+        <div id="load-more-wrap" style="display:none"><button id="load-more" onclick="loadMore()">Load more</button></div>
       </div>
     </div>
 
-    <!-- Content -->
     <div id="content">
       <div id="empty-state">
         <div class="icon">💎</div>
         <h2 style="font-size:17px;font-weight:600">Select a product</h2>
-        <p>Browse the catalog on the left. Click any product to see its recommendations and, where available, a side-by-side Searchspring comparison.</p>
+        <p>Browse the catalog on the left. Use thumbs up/down on any rec to log feedback — it commits directly to GitHub as training data.</p>
+        <p style="margin-top:6px">Click <strong>⚙ Feedback setup</strong> in the header to configure your GitHub token.</p>
       </div>
       <div id="product-detail" style="display:none"></div>
     </div>
   </div>
 </div>
 
+<!-- Setup modal -->
+<div class="modal-overlay" id="setup-modal">
+  <div class="modal">
+    <h2>Feedback setup</h2>
+    <p>Votes are committed directly to <code>feedback/queue.jsonl</code> in the demo repo. You need a GitHub fine-grained token with <strong>Contents: Read &amp; write</strong> on <code>jordan-at-brilliant/be-ore-demo</code>.</p>
+    <label>Your name (appears in feedback)</label>
+    <input id="setup-name" type="text" placeholder="e.g. Jordan" autocomplete="name">
+    <label>GitHub token</label>
+    <input id="setup-token" type="password" placeholder="github_pat_…">
+    <p class="modal-note">
+      Create one at <a href="https://github.com/settings/tokens?type=beta" target="_blank">github.com/settings/tokens</a> →
+      Fine-grained → Repository access: <em>jordan-at-brilliant/be-ore-demo</em> → Permissions → Contents: Read and write.
+    </p>
+    <p class="modal-note" style="margin-top:6px">If no token is set, votes are queued locally and you can export them as JSON.</p>
+    <div class="modal-actions">
+      <button class="btn-ghost" onclick="closeSetup()">Cancel</button>
+      <button class="btn-primary" onclick="saveSetup()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- Feedback panel -->
+<div id="fb-panel">
+  <h3>Feedback queue <button class="fb-panel-close" onclick="toggleFbPanel()">✕</button></h3>
+  <div id="fb-queue-list"></div>
+  <div class="fb-panel-actions">
+    <button class="fb-panel-btn" onclick="exportFeedback()">⬇ Export JSON</button>
+    <button class="fb-panel-btn" onclick="syncPending()">↑ Retry sync</button>
+  </div>
+</div>
+
+<!-- Toast -->
+<div id="toast"></div>
+
 <script>
-const DATA  = 'data';
+// ════════════════════════════════════════════════════════════
+// Constants & state
+// ════════════════════════════════════════════════════════════
+const DATA = 'data';
 const ICONS = {rings:'💍',earrings:'✨',bracelets:'📿',pendants:'🏅'};
 const PAGE_SIZE = 40;
+const GH_REPO = 'jordan-at-brilliant/be-ore-demo';
+const GH_FILE = 'feedback/queue.jsonl';
+const LS_TOKEN  = 'ore_gh_token';
+const LS_NAME   = 'ore_tester_name';
+const LS_VOTES  = 'ore_votes';    // {voteKey: {vote, note, ts, synced}}
+const LS_QUEUE  = 'ore_fb_queue'; // [{...entry, synced:false}] for retry
 
-let currentCat = 'rings';
-let catalog = {};   // {base_sku: design}
-let recs    = {};   // {full_sku: {similar_style, pairs_with, complete_look}}
-let ssData  = null; // loaded once: {cat: {base_sku: {similar, cross_sell}}}
-let filtered = [];
-let page = 0;
-let selectedBase = null;
-let selectedSku  = null;  // current variant full SKU
-let loadedCats = {};
-let activeView = 'ore';  // 'ore' | 'ss'
+let currentCat  = 'rings';
+let catalog     = {};
+let recs        = {};
+let ssData      = null;
+let filtered    = [];
+let page        = 0;
+let selectedBase= null;
+let selectedSku = null;
+let loadedCats  = {};
+let activeView  = 'ore';
+let votes       = {};   // loaded from LS
+let fbQueue     = [];   // loaded from LS
 
-// ── Theme ─────────────────────────────────────────────────
+function loadLS() {
+  try { votes   = JSON.parse(localStorage.getItem(LS_VOTES)  || '{}'); } catch(e){}
+  try { fbQueue = JSON.parse(localStorage.getItem(LS_QUEUE)  || '[]'); } catch(e){}
+}
+function saveLS() {
+  localStorage.setItem(LS_VOTES, JSON.stringify(votes));
+  localStorage.setItem(LS_QUEUE, JSON.stringify(fbQueue));
+}
+loadLS();
+
+// ════════════════════════════════════════════════════════════
+// Theme
+// ════════════════════════════════════════════════════════════
 function toggleTheme() {
   const cur = document.documentElement.getAttribute('data-theme');
-  document.documentElement.setAttribute('data-theme', cur === 'dark' ? 'light' : 'dark');
+  document.documentElement.setAttribute('data-theme', cur==='dark'?'light':'dark');
 }
 
-// ── Utilities ─────────────────────────────────────────────
-function fmtLabel(s) {
-  return (s || '').replace(/_/g,' ').replace(/\b\w/g,c=>c.toUpperCase());
-}
-function fmtPrice(p) {
-  return p ? '$' + Number(p).toLocaleString() : '';
-}
-function baseSku(sku) {
-  return sku && sku.includes('-') ? sku.rsplit ? sku.rsplit('-',1)[0] : sku.slice(0,sku.lastIndexOf('-')) : sku;
+// ════════════════════════════════════════════════════════════
+// Toast
+// ════════════════════════════════════════════════════════════
+let toastTimer;
+function showToast(msg, isErr=false) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.className   = 'show' + (isErr?' err':'');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=>el.className='', 3200);
 }
 
-// ── Data loading ───────────────────────────────────────────
+// ════════════════════════════════════════════════════════════
+// Setup modal
+// ════════════════════════════════════════════════════════════
+function openSetup() {
+  document.getElementById('setup-name').value  = localStorage.getItem(LS_NAME)  || '';
+  document.getElementById('setup-token').value = localStorage.getItem(LS_TOKEN) || '';
+  document.getElementById('setup-modal').classList.add('open');
+}
+function closeSetup() {
+  document.getElementById('setup-modal').classList.remove('open');
+}
+function saveSetup() {
+  const name  = document.getElementById('setup-name').value.trim();
+  const token = document.getElementById('setup-token').value.trim();
+  if (!name) { showToast('Please enter your name.', true); return; }
+  localStorage.setItem(LS_NAME,  name);
+  localStorage.setItem(LS_TOKEN, token);
+  closeSetup();
+  showToast(token ? `Saved — votes will commit to GitHub as ${name}` : `Saved — votes will queue locally as ${name}`);
+}
+
+// ════════════════════════════════════════════════════════════
+// Feedback queue panel
+// ════════════════════════════════════════════════════════════
+function toggleFbPanel() {
+  const panel = document.getElementById('fb-panel');
+  panel.classList.toggle('open');
+  if (panel.classList.contains('open')) renderFbPanel();
+}
+function renderFbPanel() {
+  const entries = Object.values(votes).sort((a,b)=>b.ts.localeCompare(a.ts)).slice(0,30);
+  const list = document.getElementById('fb-queue-list');
+  if (!entries.length) { list.innerHTML='<div class="no-recs">No votes yet.</div>'; return; }
+  list.innerHTML = entries.map(e=>`
+    <div class="fb-queue-item">
+      <span class="fqi-vote">${e.vote==='up'?'👍':'👎'}</span>
+      <div class="fqi-info">
+        <div class="fqi-skus">${e.anchor_sku} → ${e.rec_sku}</div>
+        <div style="font-size:10px;color:var(--text-dim)">${e.fn} · ${e.tester}${e.note?' · "'+e.note+'"':''}</div>
+      </div>
+      <span class="fqi-status ${e.synced?'synced':'pending'}">${e.synced?'✓ synced':'pending'}</span>
+    </div>`).join('');
+}
+function updateFbBadge() {
+  const n = Object.keys(votes).length;
+  const badge = document.getElementById('fb-badge');
+  document.getElementById('fb-count').textContent = n;
+  badge.classList.toggle('show', n>0);
+}
+
+function exportFeedback() {
+  const entries = Object.values(votes);
+  if (!entries.length) { showToast('No votes to export.'); return; }
+  const jsonl = entries.map(e=>JSON.stringify(e)).join('\n');
+  const blob = new Blob([jsonl], {type:'application/x-ndjson'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `ore-feedback-${new Date().toISOString().slice(0,10)}.jsonl`;
+  a.click();
+}
+
+async function syncPending() {
+  const token = localStorage.getItem(LS_TOKEN);
+  if (!token) { showToast('No GitHub token configured — open ⚙ Feedback setup.', true); return; }
+  const pending = Object.values(votes).filter(e=>!e.synced);
+  if (!pending.length) { showToast('Nothing pending.'); return; }
+  showToast(`Syncing ${pending.length} votes…`);
+  let ok = 0;
+  for (const entry of pending) {
+    const success = await ghAppend(entry, token);
+    if (success) { votes[voteKey(entry.anchor_sku, entry.fn, entry.rec_sku)].synced = true; ok++; }
+  }
+  saveLS();
+  updateFbBadge();
+  showToast(ok===pending.length ? `Synced ${ok} votes ✓` : `Synced ${ok}/${pending.length} — check token.`, ok<pending.length);
+  if (document.getElementById('fb-panel').classList.contains('open')) renderFbPanel();
+}
+
+// ════════════════════════════════════════════════════════════
+// GitHub Contents API
+// ════════════════════════════════════════════════════════════
+async function ghAppend(entry, token) {
+  const api = `https://api.github.com/repos/${GH_REPO}/contents/${GH_FILE}`;
+  const headers = {
+    'Authorization': `Bearer ${token}`,
+    'Accept': 'application/vnd.github+json',
+    'X-GitHub-Api-Version': '2022-11-28',
+  };
+
+  // GET current file (may not exist yet)
+  let sha = null, currentLines = '';
+  try {
+    const res = await fetch(api, {headers});
+    if (res.ok) {
+      const data = await res.json();
+      sha = data.sha;
+      currentLines = atob(data.content.replace(/\n/g,''));
+    } else if (res.status !== 404) {
+      return false;
+    }
+  } catch(e) { return false; }
+
+  // Append new line
+  const newContent = (currentLines ? currentLines.trimEnd()+'\n' : '') + JSON.stringify(entry) + '\n';
+  const encoded = btoa(unescape(encodeURIComponent(newContent)));
+
+  const body = {
+    message: `feedback: ${entry.vote} ${entry.anchor_sku}→${entry.rec_sku} (${entry.tester})`,
+    content: encoded,
+    ...(sha ? {sha} : {}),
+  };
+
+  try {
+    const res = await fetch(api, {method:'PUT', headers:{...headers,'Content-Type':'application/json'}, body:JSON.stringify(body)});
+    return res.ok || res.status===201;
+  } catch(e) { return false; }
+}
+
+// ════════════════════════════════════════════════════════════
+// Vote submission
+// ════════════════════════════════════════════════════════════
+function voteKey(anchorSku, fn, recSku) {
+  return `${anchorSku}|${fn}|${recSku}`;
+}
+
+async function submitVote(anchorSku, fn, recSku, vote, note, cardId) {
+  const tester = localStorage.getItem(LS_NAME);
+  if (!tester) {
+    openSetup();
+    showToast('Please set your name first.', true);
+    return;
+  }
+
+  const key = voteKey(anchorSku, fn, recSku);
+  const entry = {
+    ts: new Date().toISOString(),
+    tester,
+    anchor_sku: anchorSku,
+    anchor_cat: currentCat,
+    fn,
+    rec_sku:    recSku,
+    vote,
+    note: note || '',
+    synced: false,
+  };
+
+  votes[key] = entry;
+  saveLS();
+  updateFbBadge();
+
+  // Update card UI immediately
+  updateCardFeedbackUI(cardId, vote, note);
+
+  // Try GitHub sync
+  const token = localStorage.getItem(LS_TOKEN);
+  if (token) {
+    const ok = await ghAppend(entry, token);
+    if (ok) {
+      votes[key].synced = true;
+      saveLS();
+      showToast(`${vote==='up'?'👍':'👎'} Saved to GitHub`);
+    } else {
+      showToast('Queued locally — sync failed, will retry.', true);
+    }
+  } else {
+    showToast(`${vote==='up'?'👍':'👎'} Queued locally (no GitHub token set)`);
+  }
+
+  if (document.getElementById('fb-panel').classList.contains('open')) renderFbPanel();
+}
+
+function updateCardFeedbackUI(cardId, vote, note) {
+  const card = document.getElementById(cardId);
+  if (!card) return;
+  const upBtn  = card.querySelector('.fb-btn.up');
+  const downBtn= card.querySelector('.fb-btn.down');
+  const noteWrap = card.querySelector('.fb-note-wrap');
+  if (upBtn)   upBtn.classList.toggle('active', vote==='up');
+  if (downBtn) downBtn.classList.toggle('active', vote==='down');
+  if (noteWrap && vote==='up') noteWrap.style.display='none';
+}
+
+function toggleNote(cardId, anchorSku, fn, recSku) {
+  const card = document.getElementById(cardId);
+  if (!card) return;
+  const wrap = card.querySelector('.fb-note-wrap');
+  const open = wrap.style.display !== 'none' && wrap.style.display !== '';
+  if (open) { wrap.style.display='none'; return; }
+  wrap.style.display='block';
+  const ta = wrap.querySelector('textarea');
+  if (ta) { ta.focus(); }
+}
+
+function submitNote(cardId, anchorSku, fn, recSku) {
+  const card = document.getElementById(cardId);
+  if (!card) return;
+  const note = card.querySelector('textarea')?.value?.trim() || '';
+  card.querySelector('.fb-note-wrap').style.display='none';
+  submitVote(anchorSku, fn, recSku, 'down', note, cardId);
+}
+
+// ════════════════════════════════════════════════════════════
+// Utilities
+// ════════════════════════════════════════════════════════════
+function fmtLabel(s) { return (s||'').replace(/_/g,' ').replace(/\b\w/g,c=>c.toUpperCase()); }
+function fmtPrice(p) { return p ? '$'+Number(p).toLocaleString() : ''; }
+
+// ════════════════════════════════════════════════════════════
+// Data loading
+// ════════════════════════════════════════════════════════════
 async function loadCat(cat) {
   if (loadedCats[cat]) return;
   showListLoading();
@@ -325,75 +594,64 @@ async function loadCat(cat) {
     fetch(`${DATA}/catalog_${cat}.json`).then(r=>r.json()),
     fetch(`${DATA}/recs_${cat}.json`).then(r=>r.json()),
   ]);
-  loadedCats[cat] = { catalog: catData, recs: recData };
+  loadedCats[cat] = {catalog:catData, recs:recData};
 }
-
 async function ensureSS() {
   if (ssData) return;
   ssData = await fetch(`${DATA}/ss_comparison.json`).then(r=>r.json()).catch(()=>({}));
 }
-
 function showListLoading() {
   document.getElementById('product-list').innerHTML =
     '<div class="loading-state"><div class="spinner"></div><span>Loading catalog…</span></div>';
-  document.getElementById('load-more-wrap').style.display = 'none';
+  document.getElementById('load-more-wrap').style.display='none';
 }
 
-// ── Category switch ────────────────────────────────────────
+// ════════════════════════════════════════════════════════════
+// Category
+// ════════════════════════════════════════════════════════════
 async function selectCat(cat) {
-  currentCat = cat;
-  selectedBase = null; selectedSku = null;
+  currentCat=cat; selectedBase=null; selectedSku=null;
   document.querySelectorAll('.cat-tab').forEach(t=>t.classList.toggle('active',t.dataset.cat===cat));
   document.getElementById('empty-state').style.display='';
   document.getElementById('product-detail').style.display='none';
   document.getElementById('search').value='';
-
   await loadCat(cat);
   catalog = loadedCats[cat].catalog;
   recs    = loadedCats[cat].recs;
-  document.getElementById('stat-total').textContent = Object.keys(catalog).length.toLocaleString();
+  document.getElementById('stat-total').textContent=Object.keys(catalog).length.toLocaleString();
   populateFilters();
   applyFilters();
 }
-
 function populateFilters() {
-  const styles = [...new Set(Object.values(catalog).map(p=>p.style).filter(Boolean))].sort();
-  const sel = document.getElementById('filter-style');
-  sel.innerHTML = `<option value="">All styles</option>` +
-    styles.map(s=>`<option value="${s}">${fmtLabel(s)}</option>`).join('');
+  const styles=[...new Set(Object.values(catalog).map(p=>p.style).filter(Boolean))].sort();
+  const sel=document.getElementById('filter-style');
+  sel.innerHTML=`<option value="">All styles</option>`+styles.map(s=>`<option value="${s}">${fmtLabel(s)}</option>`).join('');
 }
 
-// ── Filtering ──────────────────────────────────────────────
+// ════════════════════════════════════════════════════════════
+// Filtering & list
+// ════════════════════════════════════════════════════════════
 function applyFilters() {
-  const q     = document.getElementById('search').value.toLowerCase();
-  const style = document.getElementById('filter-style').value;
-  const price = document.getElementById('filter-price').value;
-
-  filtered = Object.entries(catalog).filter(([base,p])=>{
-    if (q && !p.name.toLowerCase().includes(q) && !base.toLowerCase().includes(q)) return false;
-    if (style && p.style !== style) return false;
-    if (price) {
-      const [lo,hi] = price.split('-').map(Number);
-      if ((p.price||0) < lo || (p.price||0) > hi) return false;
-    }
+  const q    =document.getElementById('search').value.toLowerCase();
+  const style=document.getElementById('filter-style').value;
+  const price=document.getElementById('filter-price').value;
+  filtered=Object.entries(catalog).filter(([base,p])=>{
+    if(q&&!p.name.toLowerCase().includes(q)&&!base.toLowerCase().includes(q))return false;
+    if(style&&p.style!==style)return false;
+    if(price){const[lo,hi]=price.split('-').map(Number);if((p.price||0)<lo||(p.price||0)>hi)return false;}
     return true;
   });
-  page = 0;
-  renderList();
+  page=0; renderList();
 }
-
-// ── List rendering ─────────────────────────────────────────
 function renderList() {
-  const slice = filtered.slice(0,(page+1)*PAGE_SIZE);
-  const icon = ICONS[currentCat]||'💎';
-  document.getElementById('product-list').innerHTML = slice.map(([base,p])=>{
-    const active = base===selectedBase?' active':'';
-    const thumb = p.image
-      ? `<img src="${p.image}" alt="" loading="lazy" onerror="this.style.display='none'">`
-      : icon;
-    const vc = p.variants?.length>1 ? `<div class="p-variant-count">${p.variants.length} metals</div>` : '';
+  const slice=filtered.slice(0,(page+1)*PAGE_SIZE);
+  const icon=ICONS[currentCat]||'💎';
+  document.getElementById('product-list').innerHTML=slice.map(([base,p])=>{
+    const active=base===selectedBase?' active':'';
+    const thumb=p.image?`<img src="${p.image}" alt="" loading="lazy" onerror="this.style.display='none'">`:'icon';
+    const vc=p.variants?.length>1?`<div class="p-vc">${p.variants.length} metals</div>`:'';
     return `<div class="product-row${active}" onclick="selectProduct('${base}')">
-      <div class="p-thumb">${thumb}</div>
+      <div class="p-thumb">${p.image?`<img src="${p.image}" alt="" loading="lazy" onerror="this.style.display='none'">`:`${icon}`}</div>
       <div class="p-info">
         <div class="p-name">${p.name||base}</div>
         <div class="p-sku">${base}</div>
@@ -402,100 +660,82 @@ function renderList() {
       </div>
     </div>`;
   }).join('');
-
-  document.getElementById('product-count').textContent = `${filtered.length.toLocaleString()} designs`;
-  const hasMore = filtered.length > slice.length;
-  const mw = document.getElementById('load-more-wrap');
-  mw.style.display = hasMore ? '' : 'none';
-  if (hasMore) document.getElementById('load-more').textContent =
-    `Load more (${filtered.length-slice.length} remaining)`;
+  document.getElementById('product-count').textContent=`${filtered.length.toLocaleString()} designs`;
+  const hasMore=filtered.length>slice.length;
+  document.getElementById('load-more-wrap').style.display=hasMore?'':'none';
+  if(hasMore) document.getElementById('load-more').textContent=`Load more (${filtered.length-slice.length} remaining)`;
 }
+function loadMore(){page++;renderList();}
 
-function loadMore() { page++; renderList(); }
-
-// ── Product selection ─────────────────────────────────────
+// ════════════════════════════════════════════════════════════
+// Product selection & detail
+// ════════════════════════════════════════════════════════════
 async function selectProduct(base, variantSku) {
-  selectedBase = base;
-  const design = catalog[base];
-  if (!design) return;
-
-  // Default to first variant unless specified
-  selectedSku = variantSku || design.variants?.[0]?.sku || base;
-
+  selectedBase=base;
+  const design=catalog[base];
+  if(!design)return;
+  selectedSku=variantSku||design.variants?.[0]?.sku||base;
   document.querySelectorAll('.product-row').forEach(r=>r.classList.remove('active'));
   document.querySelectorAll('.product-row').forEach(r=>{
-    if (r.querySelector('.p-sku')?.textContent===base) r.classList.add('active');
+    if(r.querySelector('.p-sku')?.textContent===base)r.classList.add('active');
   });
-
   await ensureSS();
-  renderDetail();
   document.getElementById('empty-state').style.display='none';
   document.getElementById('product-detail').style.display='';
+  document.getElementById('product-detail').innerHTML=buildDetail();
   document.getElementById('content').scrollTop=0;
 }
 
 function switchVariant(sku) {
-  selectedSku = sku;
-  // Update variant image + price in header without full re-render
-  const design = catalog[selectedBase];
-  const v = design?.variants?.find(v=>v.sku===sku);
-  if (v) {
-    const imgEl = document.getElementById('detail-img-el');
-    if (imgEl) {
-      if (v.image) { imgEl.src=v.image; imgEl.style.display=''; }
-      else imgEl.style.display='none';
-    }
-    const priceEl = document.getElementById('detail-price-el');
-    if (priceEl && v.price) priceEl.textContent='$'+Number(v.price).toLocaleString();
-    const skuEl = document.getElementById('detail-sku-el');
-    if (skuEl) skuEl.textContent=sku;
+  selectedSku=sku;
+  const design=catalog[selectedBase];
+  const v=design?.variants?.find(v=>v.sku===sku);
+  if(v){
+    const imgEl=document.getElementById('detail-img-el');
+    if(imgEl){if(v.image){imgEl.src=v.image;imgEl.style.display='';}else imgEl.style.display='none';}
+    const priceEl=document.getElementById('detail-price-el');
+    if(priceEl&&v.price)priceEl.textContent='$'+Number(v.price).toLocaleString();
+    const skuEl=document.getElementById('detail-sku-el');
+    if(skuEl)skuEl.textContent=sku;
   }
-  // Update swatch active state
   document.querySelectorAll('.swatch').forEach(s=>s.classList.toggle('active',s.dataset.sku===sku));
-  // Re-render recs section only
-  const recsArea = document.getElementById('recs-area');
-  if (recsArea) recsArea.innerHTML = buildRecsArea();
-}
-
-// ── Detail rendering ──────────────────────────────────────
-function renderDetail() {
-  document.getElementById('product-detail').innerHTML = buildDetail();
+  const ra=document.getElementById('recs-area');
+  if(ra)ra.innerHTML=buildRecsArea();
 }
 
 function buildDetail() {
-  const design = catalog[selectedBase];
-  if (!design) return '';
-  const icon = ICONS[currentCat]||'💎';
-  const v = design.variants?.find(v=>v.sku===selectedSku) || design.variants?.[0] || {};
-  const img = v.image || design.image || '';
+  const design=catalog[selectedBase];
+  if(!design)return'';
+  const icon=ICONS[currentCat]||'💎';
+  const v=design.variants?.find(v=>v.sku===selectedSku)||design.variants?.[0]||{};
+  const img=v.image||design.image||'';
 
-  const tags = [
-    design.gem_family && design.gem_family!=='no_gem' && `<span class="tag">${fmtLabel(design.gem_family)}</span>`,
-    design.style   && `<span class="tag hi">${fmtLabel(design.style)}</span>`,
-    design.occasion&& `<span class="tag">${fmtLabel(design.occasion)}</span>`,
-    design.visual_era   && `<span class="tag">${fmtLabel(design.visual_era)}</span>`,
-    design.design_motif && `<span class="tag">${fmtLabel(design.design_motif)}</span>`,
-    design.luxury_register && `<span class="tag">${fmtLabel(design.luxury_register)}</span>`,
+  const tags=[
+    design.gem_family&&design.gem_family!=='no_gem'&&`<span class="tag">${fmtLabel(design.gem_family)}</span>`,
+    design.style&&`<span class="tag hi">${fmtLabel(design.style)}</span>`,
+    design.occasion&&`<span class="tag">${fmtLabel(design.occasion)}</span>`,
+    design.visual_era&&`<span class="tag">${fmtLabel(design.visual_era)}</span>`,
+    design.design_motif&&`<span class="tag">${fmtLabel(design.design_motif)}</span>`,
+    design.luxury_register&&`<span class="tag">${fmtLabel(design.luxury_register)}</span>`,
   ].filter(Boolean).join('');
 
-  const variants = design.variants || [];
-  const swatches = variants.length > 1 ? `
+  const variants=design.variants||[];
+  const swatches=variants.length>1?`
     <div class="variants-row">
       <span class="variants-label">Metal</span>
       ${variants.map(vv=>`
         <button class="swatch${vv.sku===selectedSku?' active':''}" data-sku="${vv.sku}" onclick="switchVariant('${vv.sku}')">
           <span class="swatch-dot" style="background:${vv.swatch||'#CCC'}"></span>
           ${vv.label||vv.suffix}
-          ${vv.price ? `<span style="color:var(--text-dim);font-size:10px">$${Number(vv.price).toLocaleString()}</span>` : ''}
+          ${vv.price?`<span style="color:var(--text-dim);font-size:10px">$${Number(vv.price).toLocaleString()}</span>`:''}
         </button>`).join('')}
-    </div>` : '';
+    </div>`:'';
 
-  const hasSS = !!(ssData?.[currentCat]?.[selectedBase]);
-
+  const hasSS=!!(ssData?.[currentCat]?.[selectedBase]);
   return `
   <div class="detail-header">
     <div class="detail-img">
-      ${img ? `<img id="detail-img-el" src="${img}" alt="${design.name||selectedBase}" onerror="this.style.display='none'">` : icon}
+      ${img?`<img id="detail-img-el" src="${img}" alt="${design.name||selectedBase}" onerror="this.style.display='none'">`:`${icon}`}
     </div>
     <div class="detail-meta">
       <div class="detail-name">${design.name||selectedBase}</div>
@@ -504,173 +744,176 @@ function buildDetail() {
       ${swatches}
     </div>
   </div>
-
-  ${tags ? `<div class="tags-row">${tags}</div>` : ''}
-
+  ${tags?`<div class="tags-row">${tags}</div>`:''}
   <div class="feature-strip">
     <span class="chip live"><span class="dot"></span>Similar Style</span>
     <span class="chip live"><span class="dot"></span>Pairs With</span>
     <span class="chip live"><span class="dot"></span>Complete the Look</span>
-    ${hasSS?'<span class="chip ss"><span class="dot"></span>Searchspring comparison available</span>':''}
-    <span class="chip soon"><span class="dot"></span>Thumbs Up/Down (with server)</span>
+    ${hasSS?'<span class="chip ss"><span class="dot"></span>Searchspring comparison</span>':''}
     <span class="chip soon"><span class="dot"></span>Personalized ranking (with server)</span>
   </div>
-
   <div class="view-tabs">
     <button class="view-tab${activeView==='ore'?' active':''}" onclick="setView('ore')">BE·ORE Engine</button>
     ${hasSS?`<button class="view-tab ss-tab${activeView==='ss'?' active':''}" onclick="setView('ss')">Searchspring</button>`:''}
   </div>
-
-  <div id="recs-area">${buildRecsArea()}</div>
-  `;
+  <div id="recs-area">${buildRecsArea()}</div>`;
 }
 
 function setView(v) {
-  activeView = v;
+  activeView=v;
   document.querySelectorAll('.view-tab').forEach(t=>{
-    t.classList.toggle('active', t.textContent.trim()===(v==='ore'?'BE·ORE Engine':'Searchspring'));
+    const label=t.textContent.trim();
+    t.classList.toggle('active',(v==='ore'&&label==='BE·ORE Engine')||(v==='ss'&&label==='Searchspring'));
   });
-  document.getElementById('recs-area').innerHTML = buildRecsArea();
+  document.getElementById('recs-area').innerHTML=buildRecsArea();
 }
 
 function buildRecsArea() {
-  if (activeView === 'ss') return buildSSView();
+  if(activeView==='ss')return buildSSView();
   return buildOREView();
 }
 
-// ── BE·ORE recs ───────────────────────────────────────────
+// ════════════════════════════════════════════════════════════
+// ORE recs view
+// ════════════════════════════════════════════════════════════
 function buildOREView() {
-  const r = recs[selectedSku] || {};
-  const sim = r.similar_style || [];
-  const pw  = r.pairs_with    || [];
-  const cl  = r.complete_look || {};
-
+  const r=recs[selectedSku]||{};
+  const sim=r.similar_style||[];
+  const pw =r.pairs_with   ||[];
+  const cl =r.complete_look||{};
   return `
   <div class="rec-section">
-    <div class="rec-section-header">
-      <span class="rec-section-title">Similar Style</span>
-      <span class="chip live"><span class="dot"></span>Live</span>
-    </div>
-    ${sim.length ? recGrid(sim, currentCat) : '<div class="no-recs">No similar items found.</div>'}
+    <div class="rec-section-header"><span class="rec-section-title">Similar Style</span><span class="chip live"><span class="dot"></span>Live</span></div>
+    ${sim.length?recGrid(sim,'similar_style',currentCat):'<div class="no-recs">No similar items found.</div>'}
   </div>
-
   <div class="rec-section">
-    <div class="rec-section-header">
-      <span class="rec-section-title">Pairs With</span>
-      <span class="chip live"><span class="dot"></span>Live</span>
-    </div>
-    ${pw.length ? recGrid(pw, currentCat) : '<div class="no-recs">No pairing suggestions for this product.</div>'}
+    <div class="rec-section-header"><span class="rec-section-title">Pairs With</span><span class="chip live"><span class="dot"></span>Live</span></div>
+    ${pw.length?recGrid(pw,'pairs_with',currentCat):'<div class="no-recs">No pairing suggestions.</div>'}
   </div>
-
   <div class="rec-section">
-    <div class="rec-section-header">
-      <span class="rec-section-title">Complete the Look</span>
-      <span class="chip live"><span class="dot"></span>Live</span>
-    </div>
+    <div class="rec-section-header"><span class="rec-section-title">Complete the Look</span><span class="chip live"><span class="dot"></span>Live</span></div>
     ${buildCrossLook(cl)}
   </div>`;
 }
 
-// ── Searchspring view ─────────────────────────────────────
+// ════════════════════════════════════════════════════════════
+// Searchspring view
+// ════════════════════════════════════════════════════════════
 function buildSSView() {
-  const ss = ssData?.[currentCat]?.[selectedBase];
-  if (!ss) return '<div class="no-ss">No Searchspring data available for this product in the validation set.</div>';
-  const sim  = (ss.similar   ||[]).map(sku=>({sku, score:null, gate:null}));
-  const cross= (ss.cross_sell||[]).map(sku=>({sku, score:null, gate:null}));
+  const ss=ssData?.[currentCat]?.[selectedBase];
+  if(!ss)return'<div class="no-ss">No Searchspring data for this product in the validation set.</div>';
+  const sim  =(ss.similar   ||[]).map(sku=>({sku,score:null,gate:null}));
+  const cross=(ss.cross_sell||[]).map(sku=>({sku,score:null,gate:null}));
   return `
-  <div class="ss-note">Searchspring results for <strong>${selectedBase}</strong> (validation snapshot). These are the picks the current Searchspring engine returns — shown here for side-by-side comparison with BE·ORE.</div>
+  <div class="ss-note">Searchspring results for <strong>${selectedBase}</strong> (validation snapshot) — shown for side-by-side comparison with BE·ORE.</div>
   <div class="rec-section">
-    <div class="rec-section-header">
-      <span class="rec-section-title">Similar (Searchspring)</span>
-    </div>
-    ${sim.length ? recGrid(sim, currentCat, true) : '<div class="no-recs">No data.</div>'}
+    <div class="rec-section-header"><span class="rec-section-title">Similar (Searchspring)</span></div>
+    ${sim.length?recGrid(sim,'similar_style',currentCat,true):'<div class="no-recs">No data.</div>'}
   </div>
   <div class="rec-section">
-    <div class="rec-section-header">
-      <span class="rec-section-title">Cross-sell / Complete Look (Searchspring)</span>
-    </div>
-    ${cross.length ? recGrid(cross, null, true) : '<div class="no-recs">No data.</div>'}
+    <div class="rec-section-header"><span class="rec-section-title">Cross-sell (Searchspring)</span></div>
+    ${cross.length?recGrid(cross,'complete_look',null,true):'<div class="no-recs">No data.</div>'}
   </div>`;
 }
 
-// ── Rec card rendering ────────────────────────────────────
-function recGrid(items, cat, isSS=false) {
-  return `<div class="rec-grid">${items.map(r=>recCard(r,cat,isSS)).join('')}</div>`;
+// ════════════════════════════════════════════════════════════
+// Rec card rendering
+// ════════════════════════════════════════════════════════════
+function recGrid(items, fn, cat, isSS=false) {
+  return `<div class="rec-grid">${items.map(r=>recCard(r,fn,cat,isSS)).join('')}</div>`;
 }
 
 function resolveRecMeta(sku) {
-  // Try current category catalog (base-grouped — find variant match or base match)
-  const base = sku.includes('-') ? sku.slice(0,sku.lastIndexOf('-')) : sku;
-  // Check all loaded catalogs
-  for (const [,data] of Object.entries(loadedCats)) {
-    const design = data.catalog[base] || data.catalog[sku];
-    if (design) {
-      const v = design.variants?.find(v=>v.sku===sku) || design.variants?.[0];
-      return {
-        name:   design.name,
-        price:  v?.price || design.price,
-        image:  v?.image || design.image,
-        style:  design.style,
-        era:    design.visual_era,
-        motif:  design.design_motif,
-        cat:    design.category,
-      };
+  const base=sku.includes('-')?sku.slice(0,sku.lastIndexOf('-')):sku;
+  for(const[,data]of Object.entries(loadedCats)){
+    const design=data.catalog[base]||data.catalog[sku];
+    if(design){
+      const v=design.variants?.find(v=>v.sku===sku)||design.variants?.[0];
+      return{name:design.name,price:v?.price||design.price,image:v?.image||design.image,style:design.style,era:design.visual_era,motif:design.design_motif,cat:design.category};
     }
   }
-  return {};
+  return{};
 }
 
-function recCard(r, preferCat, isSS=false) {
-  const meta = resolveRecMeta(r.sku);
-  const icon = ICONS[meta.cat||preferCat||currentCat]||'💎';
-  const img = meta.image;
-  const gateOk = r.gate !== false;
-  const showGate = r.gate !== null && r.gate !== undefined;
-  const pct = r.score ? Math.round(r.score*100) : null;
+let _cardIdx=0;
+function recCard(r, fn, preferCat, isSS=false) {
+  const meta   = resolveRecMeta(r.sku);
+  const icon   = ICONS[meta.cat||preferCat||currentCat]||'💎';
+  const gateOk = r.gate!==false;
+  const showGate=r.gate!==null&&r.gate!==undefined;
+  const pct    = r.score?Math.round(r.score*100):null;
+  const attrs  = [meta.style,meta.era,meta.motif].filter(Boolean).map(a=>`<span class="rec-attr">${fmtLabel(a)}</span>`).join('');
+  const cardId = `rc-${++_cardIdx}`;
+  const key    = voteKey(selectedSku, fn, r.sku);
+  const existingVote = votes[key];
+  const upActive  = existingVote?.vote==='up';
+  const downActive= existingVote?.vote==='down';
+  const existingNote = existingVote?.note||'';
 
-  const attrs = [meta.style, meta.era, meta.motif].filter(Boolean).map(a=>
-    `<span class="rec-attr">${fmtLabel(a)}</span>`).join('');
+  const fbHtml = `
+    <div class="fb-row">
+      <button class="fb-btn up${upActive?' active':''}"
+        onclick="event.stopPropagation();submitVote('${selectedSku}','${fn}','${r.sku}','up','','${cardId}')">
+        👍 Good rec
+      </button>
+      <button class="fb-btn down${downActive?' active':''}"
+        onclick="event.stopPropagation();toggleNote('${cardId}','${selectedSku}','${fn}','${r.sku}')">
+        👎 Bad rec
+      </button>
+    </div>
+    <div class="fb-note-wrap" style="display:${downActive&&existingNote?'block':'none'}">
+      <textarea rows="2" placeholder="Why is this a bad rec? (optional)">${existingNote}</textarea>
+      <div class="fb-note-actions">
+        <button class="fb-cancel" onclick="event.stopPropagation();this.closest('.fb-note-wrap').style.display='none'">Cancel</button>
+        <button class="fb-submit" onclick="event.stopPropagation();submitNote('${cardId}','${selectedSku}','${fn}','${r.sku}')">Submit</button>
+      </div>
+    </div>`;
 
-  return `<div class="rec-card${isSS?' ss-card':''}" onclick="crossNav('${r.sku}')">
-    ${img
-      ? `<img class="rec-card-img" src="${img}" alt="" loading="lazy" onerror="this.style.display='none'">`
-      : `<div style="height:88px;display:flex;align-items:center;justify-content:center;font-size:28px;background:var(--surface2);border-radius:4px;margin-bottom:7px">${icon}</div>`}
-    <div class="rec-card-name">${meta.name||r.sku}</div>
-    <div class="rec-card-sku">${r.sku}</div>
-    ${meta.price?`<div class="rec-card-price">${fmtPrice(meta.price)}</div>`:''}
-    ${attrs?`<div class="rec-card-attrs">${attrs}</div>`:''}
-    ${pct!==null?`
-    <div class="rec-score">
-      <div class="rec-score-bar"><div class="rec-score-fill ${gateOk?'gate-ok':'gate-warn'}" style="width:${pct}%"></div></div>
-      <div class="rec-score-num">${pct}%</div>
-      ${showGate?`<span class="gate-badge ${gateOk?'ok':'warn'}">${gateOk?'✓':'⚠'}</span>`:''}
-    </div>`:''}
+  return `<div class="rec-card${isSS?' ss-card':''}" id="${cardId}">
+    <div class="rec-card-inner" onclick="crossNav('${r.sku}')">
+      ${meta.image
+        ?`<img class="rec-card-img" src="${meta.image}" alt="" loading="lazy" onerror="this.style.display='none'">`
+        :`<div style="height:90px;display:flex;align-items:center;justify-content:center;font-size:28px;background:var(--surface2);border-radius:4px;margin-bottom:7px">${icon}</div>`}
+      <div class="rec-card-name">${meta.name||r.sku}</div>
+      <div class="rec-card-sku">${r.sku}</div>
+      ${meta.price?`<div class="rec-card-price">${fmtPrice(meta.price)}</div>`:''}
+      ${attrs?`<div class="rec-card-attrs">${attrs}</div>`:''}
+      ${pct!==null?`
+      <div class="rec-score">
+        <div class="rec-score-bar"><div class="rec-score-fill ${gateOk?'ok':'warn'}" style="width:${pct}%"></div></div>
+        <div class="rec-score-num">${pct}%</div>
+        ${showGate?`<span class="gate-badge ${gateOk?'ok':'warn'}">${gateOk?'✓':'⚠'}</span>`:''}
+      </div>`:''}
+    </div>
+    ${fbHtml}
   </div>`;
 }
 
 function buildCrossLook(cl) {
-  const cats = Object.keys(cl).filter(c=>cl[c].length>0);
-  if (!cats.length) return '<div class="no-recs">No cross-category suggestions for this product.</div>';
+  const cats=Object.keys(cl).filter(c=>cl[c].length>0);
+  if(!cats.length)return'<div class="no-recs">No cross-category suggestions.</div>';
   return cats.map(cat=>`
     <div class="rec-cross-cat">
       <div class="rec-cross-cat-label">${ICONS[cat]||''} ${fmtLabel(cat)}</div>
-      ${recGrid(cl[cat],cat)}
+      ${recGrid(cl[cat],'complete_look',cat)}
     </div>`).join('');
 }
 
 async function crossNav(sku) {
-  // Find which catalog has this SKU
-  const base = sku.includes('-') ? sku.slice(0,sku.lastIndexOf('-')) : sku;
-  let targetCat = currentCat;
-  for (const [cat,data] of Object.entries(loadedCats)) {
-    if (data.catalog[base] || data.catalog[sku]) { targetCat=cat; break; }
+  const base=sku.includes('-')?sku.slice(0,sku.lastIndexOf('-')):sku;
+  let targetCat=currentCat;
+  for(const[cat,data]of Object.entries(loadedCats)){
+    if(data.catalog[base]||data.catalog[sku]){targetCat=cat;break;}
   }
-  if (targetCat !== currentCat) await selectCat(targetCat);
-  await selectProduct(base, sku);
+  if(targetCat!==currentCat)await selectCat(targetCat);
+  await selectProduct(base,sku);
   document.getElementById('content').scrollTop=0;
 }
 
-// ── Init ──────────────────────────────────────────────────
+// ════════════════════════════════════════════════════════════
+// Init
+// ════════════════════════════════════════════════════════════
+updateFbBadge();
 selectCat('rings');
 </script>
 </body>
