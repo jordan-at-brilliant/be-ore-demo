@@ -912,9 +912,21 @@ function buildRecsArea(cat, recs) {
   return buildOREView(cat, recs);
 }
 
+function metalSuffix(sku) {
+  return sku && sku.includes('-') ? sku.slice(sku.lastIndexOf('-') + 1) : '';
+}
+
+// For similar_style, prefer same metal suffix as anchor; fall back to any if < 4 matches.
+function metalFilterSim(recs, anchorSku) {
+  const suffix = metalSuffix(anchorSku);
+  if (!suffix) return recs;
+  const same  = recs.filter(r => metalSuffix(r.sku) === suffix);
+  return same.length >= 4 ? same : recs;
+}
+
 function buildOREView(cat, recs) {
   const r   = recs[state.selectedSku] || {};
-  let sim   = r.similar_style || [];
+  let sim   = metalFilterSim(r.similar_style || [], state.selectedSku);
   let pw    = r.pairs_with    || [];
   const cl  = r.complete_look || {};
 
