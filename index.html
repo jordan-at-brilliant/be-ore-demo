@@ -4,6 +4,32 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>BE·ORE Recommendation Engine</title>
+<script>
+// Lightweight access gate — keeps the demo off casual discovery.
+// Not a security boundary; fine for internal review links.
+(function(){
+  const KEY = 'ore_access';
+  const HASH = '9f4f4e5e2b6f3a1c8d7b0e6a2f5c9d3b'; // be-ore-demo
+  function h(s){let n=5381;for(let i=0;i<s.length;i++)n=((n<<5)+n)^s.charCodeAt(i);return(n>>>0).toString(16).padStart(8,'0');}
+  function check(pw){ return h(pw).startsWith(h('be-ore-demo').slice(0,4)) && pw === 'be-ore-demo'; }
+  if(sessionStorage.getItem(KEY)==='1') return;
+  document.addEventListener('DOMContentLoaded', function(){
+    var overlay = document.createElement('div');
+    overlay.id = 'pw-gate';
+    overlay.style.cssText = 'position:fixed;inset:0;background:#1a3a8a;display:flex;align-items:center;justify-content:center;z-index:9999;';
+    overlay.innerHTML = '<div style="background:#fff;border-radius:14px;padding:32px;width:360px;max-width:92vw;text-align:center;box-shadow:0 8px 40px rgba(0,0,0,.3)"><div style="font-size:32px;margin-bottom:8px">💎</div><h2 style="font-size:17px;font-weight:700;margin-bottom:6px">BE·ORE Demo</h2><p style="font-size:12px;color:#6a6460;margin-bottom:18px">Internal access only. Enter the demo password to continue.</p><input id="pw-input" type="password" placeholder="Password" autocomplete="current-password" style="width:100%;padding:10px 12px;border:2px solid #e0dbd2;border-radius:8px;font-size:14px;outline:none;margin-bottom:8px"><div id="pw-err" style="color:#c0392b;font-size:12px;height:16px;margin-bottom:8px"></div><button id="pw-btn" style="width:100%;padding:11px;border:none;border-radius:8px;background:#1a3a8a;color:#fff;font-size:14px;font-weight:700;cursor:pointer">Enter</button></div>';
+    document.body.appendChild(overlay);
+    function attempt(){
+      var pw = document.getElementById('pw-input').value;
+      if(check(pw)){sessionStorage.setItem(KEY,'1');overlay.remove();}
+      else{document.getElementById('pw-err').textContent='Incorrect password.';document.getElementById('pw-input').select();}
+    }
+    document.getElementById('pw-btn').addEventListener('click', attempt);
+    document.getElementById('pw-input').addEventListener('keydown', function(e){ if(e.key==='Enter') attempt(); });
+    document.getElementById('pw-input').focus();
+  });
+})();
+</script>
 <style>
 /* ── Tokens ── */
 :root {
@@ -418,15 +444,15 @@ textarea,input{font:inherit;}
     <h2 style="text-align:center;font-size:17px;">BE·ORE Recommendation Engine</h2>
     <p style="text-align:center;margin-top:4px;">Internal demo — your feedback trains the engine.</p>
     <ul class="welcome-points">
-      <li><span>⚠️</span><span>Recs are <strong>precomputed without the live knowledge base</strong> — the full server will improve quality significantly. Some results may feel off.</span></li>
-      <li><span>👆</span><span>Click any product to open its detail view and see Similar Style, Pairs With, and Complete the Look recommendations.</span></li>
-      <li><span>📝</span><span>Hit <strong>Review Rec</strong> on any rec card to rate it and leave notes. Every vote commits directly to GitHub as training data.</span></li>
-      <li><span>🔀</span><span>Variant swatches switch the metal — recs update to match the selected metal.</span></li>
+      <li><span>⚠️</span><span>Recs are <strong>precomputed</strong> — the live server will improve quality. Some results may feel off, which is exactly why we need your feedback.</span></li>
+      <li><span>👆</span><span>Click any product to open its detail view with Similar Style, Pairs With, and Complete the Look recs.</span></li>
+      <li><span>📝</span><span>Hit <strong>Review Rec</strong> on any card to rate it and leave notes. <strong>No setup required</strong> — feedback saves to your browser automatically.</span></li>
+      <li><span>🔀</span><span>Use metal swatches to switch variants — recs update to match.</span></li>
     </ul>
-    <div style="margin-top:6px;padding:10px 12px;background:var(--accent-light);border-radius:var(--radius);border:1px solid var(--accent);font-size:11px;color:var(--accent);">
-      <strong>Before you start:</strong> click <strong>⚙ Feedback setup</strong> in the top bar to enter your name and GitHub token so votes commit automatically.
+    <div style="margin-top:6px;padding:10px 12px;background:var(--surface2);border-radius:var(--radius);border:1px solid var(--border);font-size:11px;color:var(--text-mid);">
+      <strong>Optional:</strong> click <strong>⚙ Feedback setup</strong> to add your name and a GitHub token — this lets votes commit automatically instead of saving locally.
     </div>
-    <button class="btn-primary" style="width:100%;margin-top:16px;padding:10px;font-size:13px;" onclick="dismissWelcome()">Got it — let me browse</button>
+    <button class="btn-primary" style="width:100%;margin-top:16px;padding:10px;font-size:13px;" onclick="dismissWelcome()">Got it — start browsing</button>
   </div>
 </div>
 
