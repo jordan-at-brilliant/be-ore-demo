@@ -362,7 +362,7 @@ textarea,input{font:inherit;}
     <div id="top-right">
       <div class="status-pill"><span class="status-dot" id="ai-dot"></span><span id="ai-label">AI Offline</span></div>
       <span id="fb-badge" onclick="toggleFbPanel()">💬 <span id="fb-count">0</span> votes</span>
-      <button class="hdr-btn" onclick="openSetup()">⚙ Feedback setup</button>
+      <button class="hdr-btn" id="export-btn" style="display:none" onclick="exportFeedback()">⬇ Export feedback</button>
       <button class="hdr-btn" onclick="toggleTheme()">◑ Theme</button>
     </div>
   </div>
@@ -449,8 +449,8 @@ textarea,input{font:inherit;}
       <li><span>📝</span><span>Hit <strong>Review Rec</strong> on any card to rate it and leave notes. <strong>No setup required</strong> — feedback saves to your browser automatically.</span></li>
       <li><span>🔀</span><span>Use metal swatches to switch variants — recs update to match.</span></li>
     </ul>
-    <div style="margin-top:6px;padding:10px 12px;background:var(--surface2);border-radius:var(--radius);border:1px solid var(--border);font-size:11px;color:var(--text-mid);">
-      <strong>Optional:</strong> click <strong>⚙ Feedback setup</strong> to add your name and a GitHub token — this lets votes commit automatically instead of saving locally.
+    <div style="margin-top:6px;padding:10px 12px;background:var(--gold-light);border-radius:var(--radius);border:1px solid var(--gold);font-size:11px;color:#7a5a20;">
+      When you're done, hit <strong>⬇ Export feedback</strong> in the top bar and send the file to Jordan — that's it.
     </div>
     <button class="btn-primary" style="width:100%;margin-top:16px;padding:10px;font-size:13px;" onclick="dismissWelcome()">Got it — start browsing</button>
   </div>
@@ -515,12 +515,12 @@ textarea,input{font:inherit;}
 
 <!-- Feedback panel -->
 <div id="fb-panel">
-  <h3>Feedback queue <button class="fb-panel-close" onclick="toggleFbPanel()">✕</button></h3>
+  <h3>Your votes <button class="fb-panel-close" onclick="toggleFbPanel()">✕</button></h3>
   <div id="fb-queue-list"></div>
-  <div class="fb-panel-actions">
-    <button class="fb-panel-btn" onclick="exportFeedback()">⬇ Export JSON</button>
-    <button class="fb-panel-btn" onclick="syncPending()">↑ Retry sync</button>
+  <div class="fb-panel-actions" style="margin-top:10px;">
+    <button class="fb-panel-btn" style="background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600;" onclick="exportFeedback()">⬇ Export as JSON</button>
   </div>
+  <div style="font-size:10px;color:var(--text-dim);margin-top:7px;line-height:1.5;">Votes are saved in your browser. Export and send the file to Jordan when you're done.</div>
 </div>
 
 <!-- Toast -->
@@ -629,15 +629,16 @@ function renderFbPanel() {
       <span class="fqi-vote">${e.vote === 'up' ? '👍' : '👎'}</span>
       <div class="fqi-info">
         <div class="fqi-skus">${e.anchor_sku} → ${e.rec_sku}</div>
-        <div style="font-size:10px;color:var(--text-dim)">${e.fn} · ${e.tester}${e.note ? ' · "' + e.note + '"' : ''}</div>
+        <div style="font-size:10px;color:var(--text-dim)">${e.fn}${e.tester ? ' · ' + e.tester : ''}${e.note ? ' · "' + e.note + '"' : ''}</div>
       </div>
-      <span class="fqi-status ${e.synced ? 'synced' : 'pending'}">${e.synced ? '✓ synced' : 'pending'}</span>
     </div>`).join('');
 }
 function updateFbBadge() {
   const n = Object.keys(votes).length;
   document.getElementById('fb-count').textContent = n;
   document.getElementById('fb-badge').classList.toggle('show', n > 0);
+  const exportBtn = document.getElementById('export-btn');
+  if (exportBtn) exportBtn.style.display = n > 0 ? '' : 'none';
 }
 
 function exportFeedback() {
@@ -772,26 +773,18 @@ async function rmSend() {
 // ═══════════════════════════════════════════════════
 function voteKey(anchorSku, fn, recSku) { return `${anchorSku}|${fn}|${recSku}`; }
 
-async function submitVote(anchorSku, fn, recSku, vote, note, cardId, siblings) {
-  const tester = localStorage.getItem(LS_NAME);
-  if (!tester) { openSetup(); showToast('Please set your name first.', true); return; }
+function submitVote(anchorSku, fn, recSku, vote, note, cardId, siblings) {
+  const tester = localStorage.getItem(LS_NAME) || 'Anonymous';
   const key = voteKey(anchorSku, fn, recSku);
-  const entry = {
+  votes[key] = {
     ts: new Date().toISOString(), tester,
     anchor_sku: anchorSku, anchor_cat: state.currentCat, fn,
     rec_sku: recSku, vote, note: note || '',
     shown_alongside: (siblings || []).filter(s => s !== recSku),
-    synced: false,
   };
-  votes[key] = entry;
   saveLS(); updateFbBadge();
   updateReviewBtnUI(cardId, vote);
-  const token = localStorage.getItem(LS_TOKEN);
-  if (token) {
-    const ok = await ghAppend(entry, token);
-    if (ok) { votes[key].synced = true; saveLS(); showToast(`${vote==='up'?'👍':'👎'} Saved to GitHub`); }
-    else { showToast('Queued locally — sync failed.', true); }
-  } else { showToast(`${vote==='up'?'👍':'👎'} Queued locally (no token set)`); }
+  showToast(`${vote === 'up' ? '👍' : '👎'} Saved — export when you're done`);
   if (document.getElementById('fb-panel').classList.contains('open')) renderFbPanel();
 }
 
@@ -1395,6 +1388,15 @@ function showStyleProfile() {
 // Close modals on overlay click
 document.querySelectorAll('.modal-overlay').forEach(overlay => {
   overlay.addEventListener('click', e => { if (e.target === overlay) overlay.classList.remove('open'); });
+});
+
+// Nudge to export before closing if there are unsaved votes
+window.addEventListener('beforeunload', e => {
+  const n = Object.keys(votes).length;
+  if (n > 0) {
+    e.preventDefault();
+    e.returnValue = `You have ${n} vote${n !== 1 ? 's' : ''} saved locally. Export them before closing so your feedback isn't lost.`;
+  }
 });
 
 // ═══════════════════════════════════════════════════
