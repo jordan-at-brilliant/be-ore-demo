@@ -534,6 +534,8 @@ const DATA      = 'data';
 const ICONS     = {rings:'💍',earrings:'✨',bracelets:'📿',pendants:'🏅'};
 const PAGE_SIZE = 48;
 const LS_NAME   = 'ore_tester_name';
+const LS_TOKEN  = 'ore_gh_token';
+const LS_QUEUE  = 'ore_queue';
 const LS_VOTES  = 'ore_votes';
 const CATS      = ['rings','earrings','bracelets','pendants'];
 
@@ -1344,7 +1346,7 @@ function renderSessionSidebar() {
   if (!hist.length) {
     emptyEl.style.display = '';
     listEl.innerHTML = '';
-    document.getElementById('trend-panel').style.display = 'none';
+    const tp = document.getElementById('trend-panel'); if (tp) tp.style.display = 'none';
     return;
   }
   emptyEl.style.display = 'none';
@@ -1362,6 +1364,7 @@ function renderSessionSidebar() {
 
   const trends = trendAttributes();
   const trendPanel = document.getElementById('trend-panel');
+  if (!trendPanel) return;
   if (trends.length) {
     trendPanel.style.display = '';
     document.getElementById('trend-rows').innerHTML = trends.map(t => `
